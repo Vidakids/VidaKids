@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✨ VidaKids — Todo el año caminando con Dios
 
-## Getting Started
+VidaKids es una aplicación web de devocionales diarios para niños. Ofrece **365 devocionales**, uno para cada día del año, con versículos bíblicos, mensajes de reflexión, oraciones y actividades interactivas para que los niños crezcan en su fe de una forma divertida y visual.
 
-First, run the development server:
+## 🎯 Características
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 👤 Vista de Usuario (`/dashboard`)
+- **Calendario de meses** con emojis y frases únicas por mes
+- **Vista de días** en grid de 7 columnas con estado de completado (✅ verde)
+- **Detalle del día** con:
+  - Emoji y tema del día
+  - 📖 Versículo del día con referencia bíblica
+  - 🔮 Mensaje devocional ("Para ti")
+  - 🙏 Oración del día
+  - Botones de acción: Completado, Lee la historia, Actividades
+- **Breadcrumb** de navegación (Inicio → Mes → Día)
+- Animaciones suaves con Framer Motion
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🔧 Panel de Administración (`/admin`)
+- **Gestión de usuarios**: crear, ver y eliminar usuarios con roles (admin/maestro)
+- **Editor de contenido devocional**: editar por mes y día
+  - Emoji, tema, versículo, mensaje devocional y oración
+  - Vista previa en tiempo real
+  - Navegación entre días
+- **Gestión de actividades**: configurar enlaces de Google Drive por día/mes
+- Interfaz con animaciones y diseño pastel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Stack Tecnológico
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Tecnología | Uso |
+|---|---|
+| **Next.js 16** (App Router) | Framework principal |
+| **React 19** | UI components |
+| **TypeScript** | Tipado estático |
+| **Tailwind CSS** | Estilos |
+| **Framer Motion** | Animaciones |
+| **Shadcn/UI** | Componentes base |
+| **react-icons** | Iconografía |
 
-## Learn More
+## 📝 Licencia
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Proyecto desarrollado para VidaKids.
