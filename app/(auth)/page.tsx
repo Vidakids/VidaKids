@@ -1,286 +1,363 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useActionState, useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { HiEye, HiEyeOff } from 'react-icons/hi'
+import { login } from './actions'
 
 export default function LoginPage() {
-  const router = useRouter()
+  const [state, formAction, isPending] = useActionState(login, null)
   const [showPassword, setShowPassword] = useState(false)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
-
-    // Simulate a small delay for UX
-    await new Promise(resolve => setTimeout(resolve, 600))
-
-    // Mock credentials
-    // Admin:   admin / admin123
-    // Usuario: maestro / maestro123
-    if (username === 'admin' && password === 'admin123') {
-      localStorage.setItem('auth_token', JSON.stringify({ user: 'admin', name: 'Administrador', role: 'admin' }))
-      router.push('/admin')
-    } else if (username === 'maestro' && password === 'maestro123') {
-      localStorage.setItem('auth_token', JSON.stringify({ user: 'maestro', name: 'Maestro/a', role: 'user' }))
-      router.push('/dashboard')
-    } else {
-      setError('Usuario o contraseña incorrectos')
-      setIsLoading(false)
-    }
-  }
 
   return (
-    <div
-      className="min-h-screen min-h-[100dvh] flex items-center justify-center px-3 py-6 sm:p-4 relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, #fce4f3 0%, #e8d5f5 25%, #d5e8fc 50%, #f0e6ff 75%, #fce4f3 100%)',
-      }}
-    >
-      {/* Floating decorative shapes - hidden on very small screens */}
-      <motion.div
-        className="absolute top-[12%] right-[15%] w-4 h-4 sm:w-6 sm:h-6 rounded-sm opacity-30 hidden sm:block"
-        style={{ background: '#c9a0dc', transform: 'rotate(45deg)' }}
-        animate={{ y: [0, -12, 0], rotate: [45, 55, 45] }}
-        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' as const }}
-      />
-      <motion.div
-        className="absolute top-[18%] right-[10%] w-5 h-5 rounded-full opacity-20 hidden sm:block"
-        style={{ background: '#d4a0e8' }}
-        animate={{ y: [0, 10, 0], x: [0, 5, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' as const }}
-      />
-      <motion.div
-        className="absolute top-[25%] right-[12%] hidden sm:block"
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' as const }}
-      >
-        <div
-          className="w-0 h-0 opacity-25"
-          style={{
-            borderLeft: '8px solid transparent',
-            borderRight: '8px solid transparent',
-            borderBottom: '14px solid #b48ad8',
-          }}
-        />
-      </motion.div>
-      <motion.div
-        className="absolute bottom-[20%] left-[8%] w-4 h-4 rounded-full opacity-20 hidden sm:block"
-        style={{ background: '#a8c4f0' }}
-        animate={{ y: [0, -15, 0] }}
-        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' as const }}
-      />
-      <motion.div
-        className="absolute bottom-[30%] left-[12%] w-3 h-3 rounded-sm opacity-15 hidden sm:block"
-        style={{ background: '#f0a8c4', transform: 'rotate(30deg)' }}
-        animate={{ y: [0, 8, 0], rotate: [30, 40, 30] }}
-        transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' as const }}
-      />
-      <motion.div
-        className="absolute top-[40%] left-[5%] hidden sm:block"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' as const }}
-      >
-        <div
-          className="w-0 h-0 opacity-15"
-          style={{
-            borderLeft: '6px solid transparent',
-            borderRight: '6px solid transparent',
-            borderBottom: '10px solid #f4c6d7',
-          }}
-        />
-      </motion.div>
+    <>
+      {/* Responsive overrides */}
+      <style jsx global>{`
+        .login-card {
+          border-radius: 30px;
+          padding: 2rem 1.5rem;
+        }
+        .login-logo {
+          width: 180px !important;
+        }
+        .login-title {
+          font-size: 1.6rem;
+        }
+        .login-subtitle {
+          font-size: 0.95rem;
+        }
+        .login-label {
+          font-size: 1rem;
+        }
+        .login-input {
+          padding: 0.9rem 1.2rem;
+          border-radius: 22px;
+          font-size: 0.95rem;
+          border: 2.5px solid #FFE4F0;
+        }
+        .login-input:focus {
+          border-color: #FFB6D9;
+          background: white;
+          box-shadow: 0 5px 25px rgba(255, 182, 217, 0.3);
+          transform: scale(1.02);
+        }
+        .login-btn {
+          padding: 1.1rem;
+          border-radius: 22px;
+          font-size: 1.2rem;
+        }
+        .login-emoji-deco {
+          font-size: 5rem;
+          top: -10px;
+          right: -10px;
+        }
 
-      {/* Soft glowing orbs */}
-      <div
-        className="absolute top-[-10%] right-[-5%] w-[300px] h-[300px] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(200,160,240,0.15) 0%, transparent 70%)',
-        }}
-      />
-      <div
-        className="absolute bottom-[-10%] left-[-5%] w-[350px] h-[350px] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(160,200,240,0.15) 0%, transparent 70%)',
-        }}
-      />
+        /* Small phones 375px+ */
+        @media (min-width: 375px) {
+          .login-card {
+            border-radius: 35px;
+            padding: 2.2rem 1.8rem;
+          }
+          .login-logo {
+            width: 200px !important;
+          }
+          .login-title {
+            font-size: 1.8rem;
+          }
+          .login-subtitle {
+            font-size: 1rem;
+          }
+          .login-label {
+            font-size: 1.05rem;
+          }
+          .login-input {
+            padding: 1rem 1.4rem;
+            border-radius: 25px;
+            font-size: 1rem;
+          }
+          .login-btn {
+            padding: 1.2rem;
+            border-radius: 25px;
+            font-size: 1.3rem;
+          }
+        }
 
-      {/* Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 30, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.7, ease: 'easeOut' as const }}
-        className="w-full max-w-[480px] relative z-10"
+        /* Medium phones 414px+ */
+        @media (min-width: 414px) {
+          .login-card {
+            border-radius: 40px;
+            padding: 2.5rem 2rem;
+          }
+          .login-logo {
+            width: 220px !important;
+          }
+          .login-title {
+            font-size: 2rem;
+          }
+          .login-subtitle {
+            font-size: 1.1rem;
+          }
+          .login-label {
+            font-size: 1.1rem;
+          }
+          .login-input {
+            padding: 1.1rem 1.6rem;
+            border-radius: 28px;
+            font-size: 1.05rem;
+          }
+          .login-btn {
+            padding: 1.3rem;
+            border-radius: 28px;
+            font-size: 1.35rem;
+          }
+        }
+
+        /* Tablets / Large screens 640px+ */
+        @media (min-width: 640px) {
+          .login-card {
+            border-radius: 50px;
+            padding: 3rem 2.5rem;
+          }
+          .login-logo {
+            width: 260px !important;
+          }
+          .login-title {
+            font-size: 2.5rem;
+          }
+          .login-subtitle {
+            font-size: 1.2rem;
+          }
+          .login-label {
+            font-size: 1.2rem;
+          }
+          .login-input {
+            padding: 1.2rem 1.8rem;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            border-width: 3px;
+          }
+          .login-btn {
+            padding: 1.5rem;
+            border-radius: 30px;
+            font-size: 1.5rem;
+          }
+          .login-emoji-deco {
+            font-size: 8rem;
+            top: -20px;
+            right: -20px;
+          }
+        }
+      `}</style>
+
+      <div
+        className="min-h-screen min-h-[100dvh] flex items-center justify-center px-3 py-4 relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, #FFF5F7 0%, #FFE4F0 25%, #E1F5FE 50%, #F3E5F5 75%, #FFF8E1 100%)',
+          backgroundSize: 'cover',
+          backgroundAttachment: 'fixed',
+        }}
       >
+        {/* Overlay suave */}
         <div
-          className="bg-white rounded-[1.8rem] sm:rounded-[2.5rem] px-5 py-8 sm:p-10 sm:pt-12"
-          style={{
-            boxShadow:
-              '0 25px 80px rgba(180, 140, 220, 0.15), 0 8px 32px rgba(0, 0, 0, 0.06)',
-          }}
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: 'rgba(255, 255, 255, 0.3)' }}
+        />
+
+        {/* Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.7, ease: 'easeOut' as const }}
+          className="w-full max-w-[500px] relative z-10"
         >
-          {/* Logos */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1, y: [0, -6, 0] }}
-            transition={{
-              opacity: { duration: 0.5, delay: 0.2 },
-              scale: { duration: 0.5, delay: 0.2 },
-              y: { duration: 3, repeat: Infinity, ease: 'easeInOut' as const, delay: 0.7 },
+          <div
+            className="login-card bg-white relative overflow-hidden"
+            style={{
+              boxShadow: '0 25px 70px rgba(0, 0, 0, 0.15)',
+              transition: 'all 0.3s ease',
             }}
-            className="flex justify-center mb-5 sm:mb-8"
           >
-            <Image
-              src="/logos.png"
-              alt="Vida Kids & Culto Infantil"
-              width={240}
-              height={100}
-              className="object-contain drop-shadow-md w-[160px] sm:w-[200px] md:w-[240px] h-auto"
-              priority
-            />
-          </motion.div>
+            {/* Decorative emoji */}
+            <div className="login-emoji-deco absolute opacity-10 pointer-events-none" style={{ transform: 'rotate(15deg)' }}>
+              🙏
+            </div>
 
-          {/* Title */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-center mb-6 sm:mb-10"
-          >
-            <h1
-              className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3"
-              style={{
-                fontStyle: 'italic',
-                background: 'linear-gradient(135deg, #c084fc, #f472b6, #fb923c)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              Devocional Infantil ✨
-            </h1>
-            <p className="text-sm sm:text-base text-gray-400 tracking-wide">
-              Inicia sesión para continuar 🙏
-            </p>
-          </motion.div>
-
-          {/* Error */}
-          {error && (
+            {/* Logos */}
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="bg-red-50 border border-red-200 text-red-600 px-4 py-2.5 rounded-xl mb-5 text-sm text-center"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1, y: [0, -12, 0] }}
+              transition={{
+                opacity: { duration: 0.5, delay: 0.2 },
+                scale: { duration: 0.5, delay: 0.2 },
+                y: { duration: 3, repeat: Infinity, ease: 'easeInOut' as const, delay: 0.7 },
+              }}
+              className="flex justify-center mb-4 sm:mb-6"
             >
-              {error}
+              <Image
+                src="/logos.png"
+                alt="Vida Kids & Culto Infantil"
+                width={280}
+                height={120}
+                className="login-logo object-contain drop-shadow-md h-auto"
+                priority
+              />
             </motion.div>
-          )}
 
-          {/* Form */}
-          <form onSubmit={handleLogin}>
+            {/* Title */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="space-y-4 sm:space-y-6"
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="text-center mb-5 sm:mb-8"
             >
-              {/* Username */}
-              <div className="space-y-1.5 sm:space-y-2.5">
-                <label className="text-sm sm:text-base font-semibold text-gray-700 flex items-center gap-2">
-                  Usuario
-                  <span className="text-sm sm:text-base">👤</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ingresa tu usuario"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-4 py-3 sm:px-5 sm:py-4 rounded-xl sm:rounded-2xl border-2 border-pink-100 bg-white text-gray-800 placeholder-gray-300 text-sm sm:text-base outline-none transition-all duration-200 focus:border-pink-300 focus:ring-4 focus:ring-pink-100"
-                />
-              </div>
-
-              {/* Password */}
-              <div className="space-y-1.5 sm:space-y-2.5">
-                <label className="text-sm sm:text-base font-semibold text-gray-700 flex items-center gap-2">
-                  Contraseña
-                  <span className="text-sm sm:text-base">🔒</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Ingresa tu contraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 sm:px-5 sm:py-4 pr-11 sm:pr-12 rounded-xl sm:rounded-2xl border-2 border-pink-100 bg-white text-gray-800 placeholder-gray-300 text-sm sm:text-base outline-none transition-all duration-200 focus:border-pink-300 focus:ring-4 focus:ring-pink-100"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-pink-400 transition-colors"
-                  >
-                    {showPassword ? (
-                      <HiEyeOff className="w-5 h-5" />
-                    ) : (
-                      <HiEye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Submit */}
-              <motion.button
-                type="submit"
-                disabled={isLoading}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                className="w-full py-3.5 sm:py-4.5 rounded-xl sm:rounded-2xl text-white font-bold text-base sm:text-lg flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-70 cursor-pointer mt-2 sm:mt-3"
+              <h1
+                className="login-title font-bold mb-1 sm:mb-2"
                 style={{
-                  background: 'linear-gradient(135deg, #f9a8d4 0%, #f472b6 50%, #ec4899 100%)',
-                  boxShadow: '0 8px 25px rgba(244, 114, 182, 0.35)',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isLoading)
-                    e.currentTarget.style.boxShadow =
-                      '0 12px 35px rgba(244, 114, 182, 0.5)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    '0 8px 25px rgba(244, 114, 182, 0.35)'
+                  background: 'linear-gradient(135deg, #FFB6D9 0%, #D4A5FF 50%, #A3C7FF 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
                 }}
               >
-                {isLoading ? (
-                  <motion.div
-                    className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' as const }}
-                  />
-                ) : (
-                  <>
-                    <span>✨</span>
-                    <span>Entrar</span>
-                  </>
-                )}
-              </motion.button>
+                Devocional Infantil ✨
+              </h1>
+              <p className="login-subtitle" style={{ opacity: 0.8, color: '#666' }}>
+                Inicia sesión para continuar 🙏
+              </p>
             </motion.div>
-          </form>
 
-          {/* Footer */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="text-center text-[10px] sm:text-xs text-gray-300 mt-4 sm:mt-6"
-          >
-            Haz parte de esta experiencia espiritual para niños 💖
-          </motion.p>
-        </div>
-      </motion.div>
-    </div>
+            {/* Error */}
+            {state?.error && (
+              <motion.div
+                initial={{ opacity: 0, x: [-10, 10, -10, 10, 0] }}
+                animate={{ opacity: 1, x: 0 }}
+                className="mb-4 px-4 py-2.5 text-sm sm:text-base"
+                style={{
+                  background: '#FFE0E0',
+                  borderLeft: '4px solid #FF6B6B',
+                  borderRadius: '16px',
+                  color: '#CC0000',
+                }}
+              >
+                {state.error}
+              </motion.div>
+            )}
+
+            {/* Form */}
+            <form action={formAction}>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                {/* Usuario */}
+                <div className="mb-4 sm:mb-6">
+                  <label className="login-label block mb-1.5 sm:mb-2 font-semibold" style={{ color: '#333' }}>
+                    Usuario 👤
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Ingresa tu usuario"
+                    required
+                    className="login-input w-full outline-none"
+                    style={{
+                      background: '#FFFBFD',
+                      transition: 'all 0.3s ease',
+                    }}
+                  />
+                </div>
+
+                {/* Contraseña */}
+                <div className="mb-4 sm:mb-6">
+                  <label className="login-label block mb-1.5 sm:mb-2 font-semibold" style={{ color: '#333' }}>
+                    Contraseña 🔒
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      placeholder="Ingresa tu contraseña"
+                      required
+                      className="login-input w-full outline-none"
+                      style={{
+                        paddingRight: '3.2rem',
+                        background: '#FFFBFD',
+                        transition: 'all 0.3s ease',
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute bg-transparent border-none cursor-pointer"
+                      style={{
+                        right: '0.8rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        fontSize: '1.3rem',
+                        padding: '0.4rem',
+                        transition: 'all 0.3s ease',
+                      }}
+                    >
+                      {showPassword ? '🙈' : '👁️'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Submit */}
+                <motion.button
+                  type="submit"
+                  disabled={isPending}
+                  whileHover={!isPending ? { translateY: -5, scale: 1.02 } : {}}
+                  whileTap={!isPending ? { scale: 0.97 } : {}}
+                  className="login-btn w-full text-white font-bold cursor-pointer flex items-center justify-center gap-2 sm:gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+                  style={{
+                    border: 'none',
+                    fontWeight: 700,
+                    background: 'linear-gradient(135deg, #FFB6D9 0%, #FFC5E5 100%)',
+                    boxShadow: '0 10px 30px rgba(255, 182, 217, 0.4)',
+                    marginTop: '0.8rem',
+                    transition: 'all 0.4s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isPending) {
+                      e.currentTarget.style.boxShadow = '0 15px 40px rgba(255, 182, 217, 0.5)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 10px 30px rgba(255, 182, 217, 0.4)'
+                  }}
+                >
+                  {isPending ? (
+                    <motion.div
+                      className="rounded-full"
+                      style={{ width: 22, height: 22, borderWidth: 3, borderStyle: 'solid', borderTopColor: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' as const }}
+                    />
+                  ) : (
+                    <>
+                      <span>✨</span>
+                      <span>Entrar</span>
+                    </>
+                  )}
+                </motion.button>
+              </motion.div>
+            </form>
+
+            {/* Footer */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-center mt-4 sm:mt-6"
+              style={{ fontSize: '0.75rem', color: '#ccc' }}
+            >
+              Haz parte de esta experiencia espiritual para niños 💖
+            </motion.p>
+          </div>
+        </motion.div>
+      </div>
+    </>
   )
 }

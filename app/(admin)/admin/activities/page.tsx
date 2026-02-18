@@ -1,27 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { HiArrowLeft } from 'react-icons/hi';
 import { FiSave } from 'react-icons/fi';
 import { HiXMark, HiCheck } from 'react-icons/hi2';
+import { useAdminStore } from '@/store/admin-store';
+import { createClient } from '@/lib/supabase/client';
+import type { Tables } from '@/types/tipos';
 
-const monthsData = [
-  { month: 'ENERO', emoji: '❄️', days: 31 },
-  { month: 'FEBRERO', emoji: '❤️', days: 29 },
-  { month: 'MARZO', emoji: '🌷', days: 31 },
-  { month: 'ABRIL', emoji: '🌸', days: 30 },
-  { month: 'MAYO', emoji: '🌼', days: 31 },
-  { month: 'JUNIO', emoji: '🌻', days: 30 },
-  { month: 'JULIO', emoji: '💧', days: 31 },
-  { month: 'AGOSTO', emoji: '⭐', days: 31 },
-  { month: 'SEPTIEMBRE', emoji: '📖', days: 30 },
-  { month: 'OCTUBRE', emoji: '🍂', days: 31 },
-  { month: 'NOVIEMBRE', emoji: '🕯️', days: 30 },
-  { month: 'DICIEMBRE', emoji: '🎄', days: 31 },
-];
+type Activity = Tables<'activities'>;
+type Month = Tables<'months'>;
+
+const DAYS_IN_MONTH: Record<string, number> = {
+  Enero: 31, Febrero: 28, Marzo: 31, Abril: 30, Mayo: 31, Junio: 30,
+  Julio: 31, Agosto: 31, Septiembre: 30, Octubre: 31, Noviembre: 30, Diciembre: 31,
+};
 
 interface DayLink {
   day: number;
@@ -48,20 +44,55 @@ const itemVariants = {
 };
 
 export default function ActivitiesPage() {
-  const [selectedMonth, setSelectedMonth] = useState<typeof monthsData[0] | null>(null);
+  const { months, fetchMonths, isLoadingMonths } = useAdminStore();
+  const [selectedMonth, setSelectedMonth] = useState<Month | null>(null);
   const [links, setLinks] = useState<DayLink[]>([]);
   const [savingDay, setSavingDay] = useState<number | null>(null);
+  const [isLoadingActivities, setIsLoadingActivities] = useState(false);
 
-  const handleSelectMonth = (month: typeof monthsData[0]) => {
+  const supabase = createClient();
+
+  useEffect(() => {
+    let cancelled = false;
+    if (months.length === 0) {
+      fetchMonths().then(() => {
+        if (cancelled) return;
+      });
+    }
+    return () => { cancelled = true; };
+  }, [fetchMonths, months.length]);
+
+  const handleSelectMonth = async (month: Month) => {
     setSelectedMonth(month);
-    // Generate all days for the month with empty URLs
+    setIsLoadingActivities(true);
+
+    const daysInMonth = DAYS_IN_MONTH[month.name] ?? 30;
+
+    // Fetch existing activities for this month
+    const { data: activities } = await supabase
+      .from('activities')
+      .select('*')
+      .eq('month_id', month.id)
+      .order('day_number');
+
+    // Build a map of existing activities
+    const activityMap = new Map<number, Activity>();
+    activities?.forEach((a) => activityMap.set(a.day_number, a));
+
+    // Generate all day links, filling in existing data
     setLinks(
-      Array.from({ length: month.days }, (_, i) => ({
-        day: i + 1,
-        url: '',
-        saved: false,
-      }))
+      Array.from({ length: daysInMonth }, (_, i) => {
+        const day = i + 1;
+        const existing = activityMap.get(day);
+        return {
+          day,
+          url: existing?.drive_url ?? '',
+          saved: existing?.is_configured ?? false,
+        };
+      })
     );
+
+    setIsLoadingActivities(false);
   };
 
   const handleBack = () => {
@@ -74,11 +105,33 @@ export default function ActivitiesPage() {
   };
 
   const handleSaveDay = async (day: number) => {
+    if (!selectedMonth) return;
     setSavingDay(day);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setLinks(links.map(l => (l.day === day ? { ...l, saved: true } : l)));
+
+    const link = links.find(l => l.day === day);
+    const url = link?.url?.trim() ?? '';
+
+    const { error } = await supabase
+      .from('activities')
+      .upsert(
+        {
+          month_id: selectedMonth.id,
+          day_number: day,
+          drive_url: url || null,
+          is_configured: !!url,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'month_id,day_number' }
+      );
+
+    if (!error) {
+      setLinks(links.map(l => (l.day === day ? { ...l, saved: true } : l)));
+    }
+
     setSavingDay(null);
   };
+
+  const configuredCount = links.filter(l => l.saved).length;
 
   return (
     <motion.div
@@ -113,28 +166,38 @@ export default function ActivitiesPage() {
                 </p>
               </motion.div>
 
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4"
-              >
-                {monthsData.map((item) => (
-                  <motion.button
-                    key={item.month}
-                    variants={itemVariants}
-                    whileHover={{ scale: 1.05, y: -3 }}
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => handleSelectMonth(item)}
-                    className="bg-white rounded-full py-3 px-4 text-center shadow-sm hover:shadow-md border border-gray-100 hover:border-pink-200 transition-all cursor-pointer flex items-center justify-center gap-2"
-                  >
-                    <span className="text-base">{item.emoji}</span>
-                    <span className="text-xs sm:text-sm font-bold text-gray-600 tracking-wide">
-                      {item.month}
-                    </span>
-                  </motion.button>
-                ))}
-              </motion.div>
+              {isLoadingMonths ? (
+                <div className="flex justify-center py-12">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    className="w-8 h-8 border-3 border-pink-300 border-t-pink-500 rounded-full"
+                  />
+                </div>
+              ) : (
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4"
+                >
+                  {months.map((item) => (
+                    <motion.button
+                      key={item.id}
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.05, y: -3 }}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => handleSelectMonth(item)}
+                      className="bg-white rounded-full py-3 px-4 text-center shadow-sm hover:shadow-md border border-gray-100 hover:border-pink-200 transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <span className="text-base">{item.icon_name}</span>
+                      <span className="text-xs sm:text-sm font-bold text-gray-600 tracking-wide">
+                        {item.name?.toUpperCase()}
+                      </span>
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
             </div>
           </motion.div>
         ) : (
@@ -159,66 +222,79 @@ export default function ActivitiesPage() {
                 </Button>
               </motion.div>
               <h2 className="text-xl sm:text-2xl font-bold text-gray-600 flex items-center gap-2">
-                <span>📅</span>
-                Días de {selectedMonth.month}
+                <span>{selectedMonth.icon_name}</span>
+                Días de {selectedMonth.name}
               </h2>
+              <span className="text-sm text-gray-400 bg-green-50 px-3 py-1 rounded-full font-medium">
+                {configuredCount}/{links.length} configurados
+              </span>
             </div>
 
             {/* Days Grid */}
             <div className="bg-orange-50/60 rounded-3xl border border-orange-100/60 p-5 sm:p-8">
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-              >
-                {links.map((link) => (
+              {isLoadingActivities ? (
+                <div className="flex justify-center py-12">
                   <motion.div
-                    key={link.day}
-                    variants={itemVariants}
-                    whileHover={{ y: -2 }}
-                    className="bg-white rounded-2xl p-5 border border-pink-100/60 shadow-sm hover:shadow-md transition-all"
-                  >
-                    {/* Day Header */}
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-base font-bold text-pink-400 italic">
-                        Día {link.day}
-                      </h3>
-                      {link.saved ? (
-                        <span className="inline-flex items-center gap-1 bg-green-100 text-green-600 text-xs font-semibold px-3 py-1 rounded-full">
-                          <HiCheck size={12} />
-                          Configurado
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 bg-red-50 text-red-400 text-xs font-semibold px-3 py-1 rounded-full">
-                          <HiXMark size={12} />
-                          Sin configurar
-                        </span>
-                      )}
-                    </div>
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    className="w-8 h-8 border-3 border-pink-300 border-t-pink-500 rounded-full"
+                  />
+                </div>
+              ) : (
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                >
+                  {links.map((link) => (
+                    <motion.div
+                      key={link.day}
+                      variants={itemVariants}
+                      whileHover={{ y: -2 }}
+                      className="bg-white rounded-2xl p-5 border border-pink-100/60 shadow-sm hover:shadow-md transition-all"
+                    >
+                      {/* Day Header */}
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-base font-bold text-pink-400 italic">
+                          Día {link.day}
+                        </h3>
+                        {link.saved ? (
+                          <span className="inline-flex items-center gap-1 bg-green-100 text-green-600 text-xs font-semibold px-3 py-1 rounded-full">
+                            <HiCheck size={12} />
+                            Configurado
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 bg-red-50 text-red-400 text-xs font-semibold px-3 py-1 rounded-full">
+                            <HiXMark size={12} />
+                            Sin configurar
+                          </span>
+                        )}
+                      </div>
 
-                    {/* URL Input */}
-                    <Input
-                      value={link.url}
-                      onChange={(e) => handleUpdateUrl(link.day, e.target.value)}
-                      placeholder="https://drive.google.com/..."
-                      className="border-gray-200 text-sm rounded-xl mb-3 focus:border-pink-300 bg-gray-50/50"
-                    />
+                      {/* URL Input */}
+                      <Input
+                        value={link.url}
+                        onChange={(e) => handleUpdateUrl(link.day, e.target.value)}
+                        placeholder="https://drive.google.com/..."
+                        className="border-gray-200 text-sm rounded-xl mb-3 focus:border-pink-300 bg-gray-50/50"
+                      />
 
-                    {/* Save Button */}
-                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-                      <Button
-                        onClick={() => handleSaveDay(link.day)}
-                        disabled={savingDay === link.day || !link.url.trim()}
-                        className="w-full bg-blue-300 hover:bg-blue-400 text-white rounded-xl py-2 text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-40"
-                      >
-                        <FiSave size={14} />
-                        {savingDay === link.day ? 'Guardando...' : 'Guardar Enlace'}
-                      </Button>
+                      {/* Save Button */}
+                      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+                        <Button
+                          onClick={() => handleSaveDay(link.day)}
+                          disabled={savingDay === link.day || !link.url.trim()}
+                          className="w-full bg-blue-300 hover:bg-blue-400 text-white rounded-xl py-2 text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-40"
+                        >
+                          <FiSave size={14} />
+                          {savingDay === link.day ? 'Guardando...' : 'Guardar Enlace'}
+                        </Button>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                ))}
-              </motion.div>
+                  ))}
+                </motion.div>
+              )}
             </div>
           </motion.div>
         )}

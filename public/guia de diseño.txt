@@ -1,0 +1,2351 @@
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Devocional Bíblico Infantil 365</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Comic+Neue:wght@400;700&amp;display=swap" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Comic Neue', cursive, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #FFF5F7 0%, #FFE4F0 25%, #E1F5FE 50%, #F3E5F5 75%, #FFF8E1 100%);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        .app-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100%;
+            padding: 3rem 2rem;
+        }
+
+        /* Music Player Styles */
+        .music-player {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            background: white;
+            border-radius: 50px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .music-player:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .music-toggle {
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .music-toggle:hover {
+            transform: scale(1.2) rotate(15deg);
+        }
+
+        .music-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #FF6B9D;
+        }
+
+        /* Login Styles */
+        .login-container {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80%;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 50px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .login-card:hover {
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .login-card::before {
+            content: '🙏';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 8rem;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .login-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #FFB6D9 0%, #D4A5FF 50%, #A3C7FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1.2rem 1.8rem;
+            border: 3px solid #FFE4F0;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-family: 'Fredoka', cursive;
+            transition: all 0.3s ease;
+            background: #FFFBFD;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #FFB6D9;
+            background: white;
+            box-shadow: 0 5px 25px rgba(255, 182, 217, 0.3);
+            transform: scale(1.02);
+        }
+
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-wrapper input {
+            padding-right: 3.5rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .password-toggle:hover {
+            transform: translateY(-50%) scale(1.2);
+        }
+
+        .password-toggle:active {
+            transform: translateY(-50%) scale(0.9);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1.5rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Fredoka', cursive;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(255, 182, 217, 0.4);
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            background: linear-gradient(135deg, #FFB6D9 0%, #FFC5E5 100%);
+            color: white;
+        }
+
+        .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .login-button:not(:disabled):hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(255, 182, 217, 0.5);
+        }
+
+        .error-message {
+            background: #FFE0E0;
+            border-left: 4px solid #FF6B6B;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            color: #CC0000;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+            background: white;
+            border-radius: 40px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+            margin-bottom: 2rem;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 3px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FFB6D9;
+        }
+
+        .logout-button {
+            padding: 1rem 1.8rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Fredoka', cursive;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #FF9999 0%, #FFB3B3 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(255, 153, 153, 0.3);
+        }
+
+        .logout-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(255, 153, 153, 0.4);
+        }
+
+        .users-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .user-card {
+            background: linear-gradient(135deg, #FFF9FB 0%, #FFF5F8 100%);
+            border-radius: 25px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 2px solid #FFE4F0;
+        }
+
+        .user-card:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(255, 182, 217, 0.2);
+            border-color: #FFB6D9;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-icon {
+            font-size: 2.5rem;
+        }
+
+        .user-details h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .user-password {
+            font-size: 0.95rem;
+            color: #666;
+            margin-top: 0.3rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .user-stats {
+            font-size: 0.9rem;
+            color: #FFB6D9;
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .user-role {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .role-admin {
+            background: #FFE4B3;
+            color: #CC8800;
+        }
+
+        .role-user {
+            background: #E1F0FF;
+            color: #0066CC;
+        }
+
+        .delete-button {
+            padding: 0.7rem 1.4rem;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Fredoka', cursive;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #FFB3B3 0%, #FFC9C9 100%);
+            color: white;
+        }
+
+        .delete-button:hover {
+            background: linear-gradient(135deg, #FF9999 0%, #FFB3B3 100%);
+            transform: scale(1.05);
+        }
+
+        .change-password-button {
+            padding: 0.7rem 1.4rem;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Fredoka', cursive;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #A3C7FF 0%, #B8D4FF 100%);
+            color: white;
+            margin-right: 0.5rem;
+        }
+
+        .change-password-button:hover {
+            background: linear-gradient(135deg, #8FB8FF 0%, #A3C7FF 100%);
+            transform: scale(1.05);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .create-user-section {
+            background: linear-gradient(135deg, #F0FFF4 0%, #E6FFE9 100%);
+            border-radius: 30px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid #C3F5D0;
+        }
+
+        .create-user-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #2E7D32;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 1.2rem 2.5rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            font-family: 'Fredoka', cursive;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #FFF5F8;
+            color: #999;
+            border: 2px solid #FFE4F0;
+        }
+
+        .admin-tab.active {
+            background: linear-gradient(135deg, #FFB6D9 0%, #FFC5E5 100%);
+            color: white;
+            box-shadow: 0 8px 25px rgba(255, 182, 217, 0.4);
+            border-color: #FFB6D9;
+        }
+
+        .admin-tab:hover {
+            transform: translateY(-3px);
+        }
+
+        .coloring-links-section {
+            background: linear-gradient(135deg, #FFF9E6 0%, #FFEED9 100%);
+            border-radius: 30px;
+            padding: 2rem;
+            border: 2px solid #FFE4C4;
+        }
+
+        .coloring-month-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .month-select-button {
+            padding: 1.2rem;
+            border: 3px solid white;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Fredoka', cursive;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .month-select-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .month-select-button.selected {
+            border-color: #FFB6D9;
+            background: linear-gradient(135deg, #FFB6D9 0%, #FFD1E8 100%);
+            color: white;
+        }
+
+        .coloring-days-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 25px;
+        }
+
+        .coloring-day-card {
+            background: linear-gradient(135deg, #FFFBFD 0%, #FFF9FB 100%);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 2px solid #FFE4F0;
+        }
+
+        .coloring-day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .coloring-day-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #FFB6D9;
+        }
+
+        .link-status {
+            padding: 0.4rem 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .link-status.configured {
+            background: #C8E6C9;
+            color: #2E7D32;
+        }
+
+        .link-status.not-configured {
+            background: #FFCDD2;
+            color: #C62828;
+        }
+
+        .coloring-link-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #FFE4F0;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: 'Fredoka', cursive;
+            margin-bottom: 0.8rem;
+        }
+
+        .coloring-link-input:focus {
+            outline: none;
+            border-color: #FFB6D9;
+        }
+
+        .save-link-button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Fredoka', cursive;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #A3C7FF 0%, #B8D4FF 100%);
+            color: white;
+        }
+
+        .save-link-button:hover {
+            background: linear-gradient(135deg, #8FB8FF 0%, #A3C7FF 100%);
+            transform: translateY(-2px);
+        }
+
+        .save-link-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Home Page Styles */
+        .home-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero-card {
+            background: white;
+            border-radius: 50px;
+            padding: 3rem 2rem;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: '✨';
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 3rem;
+            opacity: 0.3;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        .hero-card::after {
+            content: '🙏';
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 3rem;
+            opacity: 0.3;
+            animation: twinkle 2s ease-in-out infinite 1s;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #FFB6D9 0%, #D4A5FF 50%, #A3C7FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            color: #666;
+        }
+
+        .months-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .month-button {
+            background: white;
+            border: none;
+            border-radius: 35px;
+            padding: 2.5rem 2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: 'Fredoka', cursive;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .month-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .month-button:hover::before {
+            opacity: 1;
+        }
+
+        .month-button:hover {
+            transform: translateY(-10px) scale(1.05) rotate(-2deg);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .month-button:active {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .month-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 0.8rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .month-theme-text {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-top: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Month Calendar Styles */
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: white;
+            padding: 1.5rem 2.5rem;
+            border-radius: 35px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.7rem 1.3rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .breadcrumb-item:hover {
+            background: rgba(255, 182, 217, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .breadcrumb-separator {
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .breadcrumb-current {
+            padding: 0.7rem 1.3rem;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .month-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .month-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .month-theme {
+            font-size: 1.8rem;
+            font-weight: 500;
+            opacity: 0.9;
+            color: #666;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+        }
+
+        .day-card {
+            background: white;
+            border-radius: 30px;
+            padding: 2rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-card:hover {
+            transform: translateY(-12px) rotate(-3deg) scale(1.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .day-card.completed {
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            border: 3px solid #66BB6A;
+        }
+
+        .day-card.completed::after {
+            content: '✅';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            animation: pop 0.5s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .day-number {
+            font-size: 3rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.8rem;
+        }
+
+        .day-icon {
+            font-size: 2.5rem;
+            animation: wiggle 3s ease-in-out infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        /* Devotional Page Styles */
+        .devotional-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .devotional-card {
+            background: white;
+            border-radius: 45px;
+            padding: 3.5rem 3rem;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+            margin-bottom: 2rem;
+        }
+
+        .devotional-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 3px dashed rgba(255, 182, 217, 0.3);
+        }
+
+        .devotional-date {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .devotional-theme {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-top: 1rem;
+        }
+
+        .devotional-emoji {
+            font-size: 5rem;
+            margin: 1rem 0;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .verse-section {
+            background: linear-gradient(135deg, rgba(255, 230, 240, 0.5) 0%, rgba(255, 250, 235, 0.5) 100%);
+            border-radius: 30px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(255, 182, 217, 0.3);
+        }
+
+        .verse-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .verse-text {
+            font-size: 1.5rem;
+            line-height: 1.8;
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        .verse-reference {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .explanation-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .explanation-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .explanation-text {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .prayer-section {
+            background: linear-gradient(135deg, rgba(163, 199, 255, 0.2) 0%, rgba(212, 165, 255, 0.2) 100%);
+            border-radius: 30px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(163, 199, 255, 0.3);
+        }
+
+        .prayer-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .prayer-text {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            font-style: italic;
+            color: #555;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .action-button {
+            padding: 1.8rem 1.5rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Fredoka', cursive;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .action-button:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
+        }
+
+        .action-button-icon {
+            font-size: 2.5rem;
+        }
+
+        .mark-complete-button {
+            background: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%);
+            color: white;
+        }
+
+        .mark-complete-button.completed {
+            background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+        }
+
+        .navigation-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            padding: 1.3rem 2.5rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            font-family: 'Fredoka', cursive;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Story Page Styles */
+        .story-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 50px;
+            padding: 3.5rem 3rem;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 4px dashed rgba(255, 182, 217, 0.3);
+        }
+
+        .story-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #FFB6D9 0%, #FFCBA4 50%, #FFE4B3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.3;
+        }
+
+        .story-theme-badge {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .story-illustration {
+            text-align: center;
+            font-size: 6rem;
+            margin: 2rem 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .story-characters {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .character {
+            font-size: 4rem;
+            animation: bounce-character 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .character:nth-child(1) { animation-delay: 0s; }
+        .character:nth-child(2) { animation-delay: 0.2s; }
+        .character:nth-child(3) { animation-delay: 0.4s; }
+        .character:nth-child(4) { animation-delay: 0.6s; }
+        .character:nth-child(5) { animation-delay: 0.8s; }
+
+        @keyframes bounce-character {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.1); }
+        }
+
+        .story-content {
+            background: linear-gradient(135deg, rgba(255, 245, 250, 0.8) 0%, rgba(245, 245, 255, 0.8) 100%);
+            border-radius: 30px;
+            padding: 3rem;
+            margin-bottom: 2.5rem;
+            box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .story-content::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 8rem;
+            opacity: 0.1;
+            font-family: Georgia, serif;
+        }
+
+        .story-text {
+            font-size: 1.4rem;
+            line-height: 2;
+            white-space: pre-line;
+            position: relative;
+            z-index: 1;
+            color: #555;
+        }
+
+        .story-moral {
+            background: linear-gradient(135deg, rgba(255, 230, 180, 0.4) 0%, rgba(255, 210, 220, 0.4) 100%);
+            border-left: 5px solid #FFD700;
+            padding: 2.5rem;
+            border-radius: 25px;
+            margin: 2rem 0;
+        }
+
+        .story-moral-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .story-moral-text {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .decorative-divider {
+            text-align: center;
+            font-size: 2.5rem;
+            margin: 2.5rem 0;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .months-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+
+            .month-button {
+                padding: 2rem 1.5rem;
+                font-size: 1.2rem;
+            }
+
+            .days-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .content-wrapper {
+                padding: 2rem 1rem;
+            }
+
+            .story-title {
+                font-size: 2rem;
+            }
+
+            .story-illustration {
+                font-size: 4rem;
+            }
+
+            .character {
+                font-size: 3rem;
+            }
+
+            .story-text {
+                font-size: 1.2rem;
+            }
+
+            .admin-tabs {
+                flex-direction: column;
+            }
+
+            .coloring-days-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .music-player {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.8rem 1.2rem;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div class="app-container">
+   <div class="content-wrapper" id="app-content">
+    <div class="login-container">
+     <div class="login-card">
+      <div class="login-header">
+       <div class="login-icon">
+        📖✨
+       </div>
+       <h1 class="login-title">Cargando...</h1>
+       <p class="login-subtitle">Por favor espera un momento</p>
+      </div>
+     </div>
+    </div>
+   </div><!-- Music Player -->
+   <div class="music-player" id="music-player" style="display: none;"><button class="music-toggle" id="music-toggle" onclick="toggleMusic()">🎵</button> <span class="music-label">Música</span>
+   </div>
+  </div><!-- Audio Element -->
+  <audio id="background-music" loop><source src="https://assets.mixkit.co/music/preview/mixkit-piano-reflections-10.mp3" type="audio/mpeg">
+  </audio>
+  <script>
+        const defaultConfig = {
+            main_title: "Todo el año caminando con Dios",
+            main_subtitle: "365 devocionales para niños, uno para cada día",
+            read_story_text: "Lee la historia",
+            coloring_text: "Actividades",
+            back_to_calendar_text: "Volver al calendario",
+            home_text: "Página principal",
+            back_to_devotional_text: "Volver al devocional"
+        };
+
+        const months = [
+            { name: "ENERO", icon: "❄️", theme: "Dios me cuida", color: "#E3F2FD" },
+            { name: "FEBRERO", icon: "💕", theme: "El amor de Dios", color: "#FFE4F0" },
+            { name: "MARZO", icon: "🌷", theme: "Nueva vida en Cristo", color: "#FFE4E9" },
+            { name: "ABRIL", icon: "🌺", theme: "Promesas de Dios", color: "#F3E5F5" },
+            { name: "MAYO", icon: "🌼", theme: "Creciendo en fe", color: "#FFF8E1" },
+            { name: "JUNIO", icon: "☀️", theme: "La luz de Jesús", color: "#FFF9C4" },
+            { name: "JULIO", icon: "💧", theme: "Descanso en Dios", color: "#E1F5FE" },
+            { name: "AGOSTO", icon: "⭐", theme: "Brillando para Dios", color: "#FFF3E0" },
+            { name: "SEPTIEMBRE", icon: "📕", theme: "Aprendiendo de Dios", color: "#F8BBD0" },
+            { name: "OCTUBRE", icon: "🍂", theme: "Gratitud y alabanza", color: "#FFE0B2" },
+            { name: "NOVIEMBRE", icon: "🙏", theme: "Oración y fe", color: "#F1E4F3" },
+            { name: "DICIEMBRE", icon: "🎄", theme: "Celebrando a Jesús", color: "#E8F5E9" }
+        ];
+
+        const devotionals = [];
+        let currentView = 'login';
+        let currentMonth = null;
+        let currentDay = null;
+        let currentUser = null;
+        let allUsers = [];
+        let coloringLinks = [];
+        let completedDays = [];
+        let isLoading = false;
+        let isMusicPlaying = false;
+
+        // Music Controls
+        function toggleMusic() {
+            const audio = document.getElementById('background-music');
+            const button = document.getElementById('music-toggle');
+            
+            if (isMusicPlaying) {
+                audio.pause();
+                button.textContent = '🎵';
+                isMusicPlaying = false;
+            } else {
+                audio.play().catch(e => console.log('Audio play failed:', e));
+                button.textContent = '🔇';
+                isMusicPlaying = true;
+            }
+        }
+
+        // GENERADOR DE HISTORIAS CON MÁS EMOJIS
+        function generateUniqueStories() {
+            const storyTemplates = {
+                animals: ["osito 🐻", "mariposa 🦋", "conejito 🐰", "abejita 🐝", "pajarito 🐦", "tortuga 🐢", "zorro 🦊", "ardilla 🐿️", "delfín 🐬", "ovejita 🐑", "león 🦁", "jirafa 🦒", "elefante 🐘", "ballena 🐋", "pez luminoso 🐟✨", "hormiga 🐜", "búho 🦉", "paloma 🕊️", "gato 🐱", "perro 🐕", "oruga 🐛", "girasol 🌻", "rosa 🌹", "árbol 🌳", "estrella ⭐", "sol ☀️", "luna 🌙", "arcoíris 🌈", "nube ☁️", "río 🌊", "ratoncito 🐭", "golondrina 🐦", "cachorro 🐶", "conejos 🐰🐰", "pato 🦆", "mariquita 🐞", "grillo 🦗", "luciérnaga ✨", "cangrejo 🦀", "cordero 🐑", "semilla 🌱", "mariposa monarca 🦋👑", "gusano seda 🐛", "hormiga soldado 🐜⚔️", "caracol 🐌", "abeja reina 🐝👑", "pingüino 🐧", "estrella mar ⭐🌊", "camaleón 🦎", "libélula ✨", "murciélago 🦇", "castor 🦫", "rana 🐸", "pez payaso 🐠", "tortuga marina 🐢🌊", "colibrí 🐦✨", "halcón 🦅", "foca 🦭", "salmón 🐟", "mantis religiosa 🦗🙏", "búfalo 🦬", "nutria 🦦", "águila 🦅", "lobo 🐺", "oso 🐻", "cisne 🦢", "oruga peluda 🐛", "zorro plateado 🦊✨", "garza real 🦢"],
+                
+                actions: ["compartió con amor 💕", "voló alto hacia el cielo 🦋☁️", "habló con valentía 💪", "trabajó duro cada día 🌟", "cantó melodías hermosas 🎵", "perseveró sin rendirse ⭐", "usó su inteligencia 🧠✨", "guardó provisión sabiamente 🌰", "saltó de gozo 🎉", "se perdió pero fue encontrado 🔍💕", "rugió con fuerza 🦁", "ayudó desde su altura 🦒", "nunca olvidó las bendiciones 🐘💭", "protegió a los pequeños 🐋🛡️", "brilló en la oscuridad 🐟✨", "cargó su semilla con fe 🐜🌱", "escuchó primero antes de hablar 🦉👂", "llevó paz a todos 🕊️☮️", "exploró con curiosidad 🐱🔍", "esperó con fidelidad 🐕💖", "se transformó bellamente 🐛➡️🦋", "miró siempre al sol ☀️🌻", "creció entre espinas 🌹", "dio frutos abundantes 🌳🍎", "guió el camino estrecho ⭐🛤️", "salió cada día fielmente ☀️", "reflejó la luz divina 🌙✨", "apareció tras la tormenta 🌈⛈️", "llevó lluvia de bendición ☁️💧", "cantó fluyendo libremente 🌊🎵", "se refugió en lo seguro 🐭🏠", "construyó su nido con amor 🐦🏡", "ladró al ver su reflejo 🐶", "compartió su hogar 🐰🏡", "remó bajo el agua 🦆💧", "protegió su jardín 🐞🌺", "cantó en el silencio 🦗🎶", "brilló junto a otros ✨⭐", "encontró su caparazón perfecto 🦀🏠", "fue buscado con amor 🐑💕", "brotó despacio pero seguro 🌱", "rodeó la montaña con paciencia 🌊⛰️", "viajó miles de kilómetros 🦋🗺️", "se envolvió para transformarse 🐛🎁", "defendió su colonia unida 🐜⚔️", "llevó su casa siempre 🐌🏠", "trabajó unida con otras 🐝🤝", "sostuvo su huevo con amor 🐧🥚", "perdió un brazo pero creció otro ⭐🌊", "cambió de color sabiamente 🦎🎨", "salió del lodo hermosa 🦢💕", "fue juzgado por su apariencia 🦇", "construyó represas fuertes 🦫🏗️", "croaba avisos importantes 🐸📢", "vivió en su anémona segura 🐠🏡", "nadó miles de kilómetros 🐟🌊", "batió sus alas rapidísimo 🐦✨💨", "voló más alto que todos 🦅☁️", "descansó sabiamente 🦭💤", "nadó contra la corriente 🐟⬆️", "esperó inmóvil con paciencia 🦗", "enfrentó tormentas con fe 🦬⛈️", "jugó con alegría pura 🦦🎉", "empujó del nido con amor 🦅💕", "aulló llamando a su manada 🐺📢", "pescó con gran esfuerzo 🐻🐟", "nadó con elegancia 🦢✨", "caminó lenta pero constante 🐢", "fue diferente y especial 🐛✨", "se paró quieta y firme 🦢"],
+                
+                lessons: ["Compartir con amor 💕 multiplica la alegría 🎉", "Confía en las capacidades que Dios te dio 💪✨", "El valor verdadero viene de Dios 🦁💖", "El trabajo constante trae frutos abundantes 🌳🍎", "Alabar a Dios alegra al mundo entero 🎵🌍", "La perseverancia siempre vence obstáculos ⭐💪", "Usa tu inteligencia para hacer el bien 🧠💕", "La generosidad siempre es bendecida 🌰✨", "La alegría pura es muy contagiosa 😊💖", "Jesús siempre nos busca cuando nos perdemos 🔍💕", "La fuerza protege a los más débiles 🦁🛡️", "Tus dones sirven para ayudar a otros 🦒💝", "Un corazón agradecido es un corazón lleno 🐘💕", "El amor de Dios no tiene límites 🐋💖∞", "Brilla la luz de Cristo donde estés 🐟✨", "Dios te da fuerzas para cada tarea 🐜💪", "La sabiduría viene de escuchar primero 🦉👂", "Los pacificadores son hijos de Dios 🕊️☮️", "Buscar a Dios trae grandes tesoros 🐱🔍💎", "La fidelidad a Dios nunca falla 🐕💖✨", "Dios te transforma cuando confías en Él 🐛➡️🦋", "Mantén tus ojos fijos en Jesús ☀️🌻", "Las circunstancias no definen quién eres 🌹💪", "Alimentarse de la Palabra trae fruto 🌳📖", "Jesús guía tus pasos en la oscuridad ⭐🛤️", "Las misericordias de Dios son nuevas cada día ☀️🌅", "Refleja la gloria de Cristo en tu vida 🌙✨", "Dios cumple cada una de Sus promesas 🌈💯", "El Espíritu Santo refresca nuestra alma ☁️💧😌", "De ti fluyen ríos de agua viva 🌊💕", "Edificar sobre Cristo te mantiene firme 🐭🏠⛰️", "Busca profundo las riquezas de Dios 🐦💎", "Dios nos poda para que demos más fruto 🐞🌺✂️", "El camino estrecho lleva a la vida eterna 🦗🛤️✨", "Cristo es el único camino al Padre ✨⭐➡️", "Tu fe pequeña puede crecer enormemente 🦀🌱🌳", "La provisión de Dios llega a tiempo perfecto 🐑💕⏰", "Siembra bien y cosecharás abundancia 🌱🌾💚", "Cristo vale más que cualquier posesión 🌊💎", "Conocer a Cristo es la perla más preciosa 🦋👑💖", "Dios te ama y te busca 🐛🔍💕", "Trabajando unidos logramos más 🐜🤝💪", "En la oscuridad, Dios es tu luz 🐌✨", "Trabaja con excelencia para Dios 🐝⭐", "Cuida lo que Dios te confió 🐧💕🥚", "Dios restaura lo que se pierde ⭐🌊➡️💫", "El corazón importa más que la apariencia 🦎💖👀", "De la dificultad sale belleza 🦢💕🌸", "No juzgues por las apariencias 🦇🚫👁️", "Tu trabajo bendice a muchos 🦫🏗️🌟", "Usa lo que tienes para servir 🐸💪📢", "La amistad verdadera es mutua 🐠🏡💕", "Confía en Dios y suelta el control 🐟🌊🙏", "Cada uno tiene su propósito natural 🐦✨🎯", "Mantén una perspectiva celestial 🦅☁️👀", "El descanso es sabiduría divina 🦭💤😌", "Ir contra la corriente vale la pena 🐟⬆️💪", "La paciencia es una estrategia sabia 🦗⏳🧠", "Enfrenta todo con fe en Dios 🦬⛈️🙏", "Disfruta la vida que Dios te dio 🦦🎉💖", "Aprender a volar requiere valentía 🦅💕", "La comunidad es muy importante 🐺📢👥", "El fracaso es solo aprendizaje 🐻🐟📚", "Dios tiene un plan de belleza 🦢✨📋", "El tiempo de Dios es perfecto ⏰🐢", "Ser diferente es tu fortaleza 🐛✨💪", "La firmeza viene con paciencia 🦢⛰️"]
+            };
+            
+            const stories = [];
+            
+            for (let i = 0; i < 365; i++) {
+                const animal = storyTemplates.animals[i % storyTemplates.animals.length];
+                const action = storyTemplates.actions[i % storyTemplates.actions.length];
+                const lesson = storyTemplates.lessons[i % storyTemplates.lessons.length];
+                const dayNum = i + 1;
+                
+                const story = `✨ DÍA ${dayNum} ✨
+
+🌟 Había una vez un ${animal} que ${action}. 
+
+💕 Este pequeño amigo aprendió una lección muy importante sobre el amor infinito y la fidelidad de Dios. A través de su experiencia, descubrió que Dios siempre está presente 🙏, guiando cada paso del camino con Su luz divina ✨.
+
+🌈 Los desafíos que enfrentó se convirtieron en maravillosas oportunidades para crecer en fe 📖 y confianza 💪. Al final, comprendió que no estaba solo, sino acompañado por el amor infinito del Creador 💖.
+
+⭐ Su historia nos enseña que: ${lesson}
+
+🌸 Cada día es una nueva oportunidad para experimentar el amor de Dios de maneras únicas y especiales. ¡Dios te ama muchísimo! 💝🙏✨`;
+                
+                stories.push(story);
+            }
+            
+            return stories;
+        }
+
+        const uniqueStories = generateUniqueStories();
+
+        // Generar oraciones para cada día
+        function generatePrayers() {
+            const prayers = [];
+            const prayerTemplates = [
+                "Querido Dios 🙏, gracias por este nuevo día ✨. Ayúdame a confiar en Ti en todo momento 💖. Que mi vida brille con Tu luz 🌟 y refleje Tu amor a los demás 💕. En el nombre de Jesús, amén 🌈.",
+                "Padre celestial ☁️, te alabo por Tu grandeza 🌟. Enséñame a ser valiente como Tú me llamas a ser 💪. Guía mis pasos hoy y siempre 👣. En el nombre de Jesús, amén 🙏.",
+                "Señor Jesús 💕, gracias por amarme tanto 💖. Ayúdame a compartir Tu amor con otros 🌸. Dame sabiduría para tomar buenas decisiones 🧠✨. En Tu nombre oro, amén 🙏.",
+                "Dios de amor 💗, te doy gracias por mi familia y amigos 👨‍👩‍👧‍👦. Protégenos y bendícenos hoy 🛡️. Que Tu paz llene mi corazón 💕. En el nombre de Jesús, amén 🌈.",
+                "Padre bueno 🌟, gracias por cuidar de mí cada día ☀️. Ayúdame a crecer en fe 📖 y a ser más como Jesús 💪. Llena mi vida de alegría 🎉. Amén 🙏.",
+                "Señor ✨, te alabo por ser mi pastor 🐑. Ayúdame a seguirte siempre 👣. Dame fuerzas para hacer lo correcto 💪 y amor para perdonar 💕. En el nombre de Jesús, amén 🙏.",
+                "Dios todopoderoso 🌟, gracias por Tu Palabra 📖 que me enseña 📚. Abre mi corazón para aprender de Ti 💖. Bendice mi día y guárdame de todo mal 🛡️. Amén 🙏.",
+                "Jesús amado 💕, gracias por ser mi mejor amigo 🤝. Ayúdame a hablar contigo en oración cada día 🙏. Llena mi vida de Tu presencia ✨. En Tu nombre, amén 🌈.",
+                "Padre celestial ☁️, te doy gracias por la naturaleza hermosa 🌻🦋. Ayúdame a cuidar Tu creación 🌍. Dame un corazón agradecido 💖 y generoso 🎁. Amén 🙏.",
+                "Señor de amor 💗, gracias por escuchar mis oraciones 🙏. Ayúdame a confiar en que siempre me respondes 💕. Bendice a quienes amo 👨‍👩‍👧‍👦. En el nombre de Jesús, amén 🌟."
+            ];
+            
+            for (let i = 0; i < 365; i++) {
+                prayers.push(prayerTemplates[i % prayerTemplates.length]);
+            }
+            
+            return prayers;
+        }
+
+        const dailyPrayers = generatePrayers();
+
+        // Generar devocionales
+        function generateDevotionals() {
+            const devos = [];
+            
+            const verses = [];
+            const baseVerses = [
+                { text: "En el principio creó Dios los cielos y la tierra.", ref: "Génesis 1:1" },
+                { text: "El Señor es mi pastor, nada me faltará.", ref: "Salmos 23:1" },
+                { text: "Esfuérzate y sé valiente; no temas ni desmayes.", ref: "Josué 1:9" },
+                { text: "Porque tanto amó Dios al mundo que dio a su Hijo único.", ref: "Juan 3:16" },
+                { text: "Todo lo puedo en Cristo que me fortalece.", ref: "Filipenses 4:13" },
+                { text: "Confía en el Señor de todo corazón.", ref: "Proverbios 3:5" },
+                { text: "El amor es paciente, es bondadoso.", ref: "1 Corintios 13:4" },
+                { text: "Jesús le dijo: Yo soy el camino, la verdad y la vida.", ref: "Juan 14:6" },
+                { text: "Pedid y se os dará; buscad y hallaréis.", ref: "Mateo 7:7" },
+                { text: "No temas, porque yo estoy contigo.", ref: "Isaías 41:10" },
+                { text: "Jehová es bueno, fortaleza en el día de la angustia.", ref: "Nahúm 1:7" },
+                { text: "Ama a tu prójimo como a ti mismo.", ref: "Mateo 22:39" },
+                { text: "Dios es amor.", ref: "1 Juan 4:8" },
+                { text: "Porque Dios no nos ha dado espíritu de cobardía, sino de poder.", ref: "2 Timoteo 1:7" },
+                { text: "Alégrate siempre en el Señor.", ref: "Filipenses 4:4" },
+                { text: "Sean fuertes y valientes.", ref: "Deuteronomio 31:6" },
+                { text: "Bendito el hombre que confía en Jehová.", ref: "Jeremías 17:7" },
+                { text: "Jehová cumplirá su propósito en mí.", ref: "Salmos 138:8" },
+                { text: "El que comenzó en vosotros la buena obra, la perfeccionará.", ref: "Filipenses 1:6" },
+                { text: "Mira que te mando que te esfuerces y seas valiente.", ref: "Josué 1:9" }
+            ];
+            
+            const explanations = [
+                "✨ Dios creó todo lo que existe con amor. Tú también eres parte de su maravillosa creación 🌟.",
+                "🐑 Jesús cuida de ti como un pastor cuida a sus ovejas. Él siempre está contigo 💕.",
+                "💪 Dios te da valentía para enfrentar cada día. No tengas miedo porque Él está contigo 🛡️.",
+                "💖 El amor de Dios por ti es tan grande que envió a Jesús para salvarte. ¡Eres muy especial! 🌟",
+                "⚡ Con Jesús a tu lado puedes lograr cosas maravillosas. Él te da la fuerza que necesitas 💪✨.",
+                "🙏 Cuando confías en Dios con todo tu corazón, Él guía tus pasos hacia lo mejor 👣🌈.",
+                "💕 Amar como Jesús significa ser amable y paciente con los demás cada día 🌸.",
+                "🛤️ Jesús es como un mapa que te muestra el mejor camino para vivir feliz 🗺️✨.",
+                "🙏 Dios escucha todas tus oraciones. Habla con Él y verás cómo te responde 💝.",
+                "🤗 Nunca estás solo. Dios siempre está a tu lado cuidándote y protegiéndote 🛡️💖."
+            ];
+            
+            for (let i = 0; i < 365; i++) {
+                const baseVerse = baseVerses[i % baseVerses.length];
+                const baseExplanation = explanations[i % explanations.length];
+                verses.push({
+                    text: baseVerse.text,
+                    ref: baseVerse.ref,
+                    explanation: `${baseExplanation} 🌟 Día ${i + 1}: Recuerda que cada nuevo día es un regalo de Dios ✨ para aprender algo especial sobre Su amor 💕.`
+                });
+            }
+            
+            const themes = ["Amor 💕", "Fe ✨", "Esperanza 🌈", "Paz 🕊️", "Alegría 😊", "Bondad 💖", "Paciencia ⏳", "Perdón 🙏", "Gratitud 🙌", "Obediencia 📖"];
+            const icons = ["💕", "⭐", "🌈", "🦋", "🌺", "🌻", "🌼", "🙏", "✨", "💖"];
+            
+            const allCharacters = [
+                ["🐻", "🐰", "🐿️", "🐦", "🐜"], ["🦋", "🐛", "🌸", "🌺", "🌻"], ["🐰", "🐢", "🦊", "🐿️", "🦔"],
+                ["🐝", "🌼", "🌻", "🌺", "🦋"], ["🐦", "🐥", "🕊️", "🌳", "☀️"], ["🐠", "🐋", "🐙", "🦈", "🌊"],
+                ["🐶", "🐱", "🐭", "🐹", "🐰"], ["🦁", "🐯", "🐘", "🦒", "🦓"], ["🐼", "🦘", "🐨", "🐸", "🦜"],
+                ["🐧", "🦢", "🦆", "🐟", "🐳"], ["🦊", "🦝", "🐺", "🐴", "🐴"], ["🐮", "🐷", "🐑", "🐔", "🐣"]
+            ];
+            
+            const allIllustrations = [
+                "💕✨🌈", "⭐🌙✨", "🌸🌺🦋", "🙏💖🌟", "🌈☀️💕", "✨🦋🌻",
+                "💫🌙⭐", "🌺🌸💐", "🦋🌼🌻", "☀️🌈✨", "💖💕💗", "🌟✨💫"
+            ];
+            
+            const storyTitles = [
+                "El Osito Generoso 🐻💕", "La Mariposa Valiente 🦋", "El Conejito Tímido 🐰", "La Abejita Trabajadora 🐝", "El Pajarito Cantor 🐦🎵",
+                "La Tortuga Perseverante 🐢", "El Zorro Inteligente 🦊", "La Ardilla Previsora 🐿️", "El Delfín Alegre 🐬", "La Ovejita Perdida 🐑",
+                "El León Fuerte 🦁", "La Jirafa Alta 🦒", "El Elefante Agradecido 🐘", "La Ballena Protectora 🐋", "El Pez Luminoso 🐟✨",
+                "La Hormiga Constante 🐜", "El Búho Sabio 🦉", "La Paloma Pacificadora 🕊️", "El Gato Curioso 🐱", "El Perro Fiel 🐕",
+                "La Oruga Transformada 🐛➡️🦋", "El Girasol Fiel 🌻", "La Rosa entre Espinas 🌹", "El Árbol Plantado 🌳", "La Estrella Brillante ⭐",
+                "El Sol Fiel ☀️", "La Luna Reflejante 🌙", "El Arcoíris Prometido 🌈", "La Nube Viajera ☁️", "El Río Cantarín 🌊",
+                "La Montaña Firme ⛰️", "El Océano Profundo 🌊💙", "El Jardín Cuidado 🌺", "El Camino Angosto 🛤️", "El Puente Unidor 🌉",
+                "La Semilla Pequeña 🌱", "El Fruto Perfecto 🍎", "La Cosecha Abundante 🌾", "El Tesoro Escondido 💎", "La Perla Preciosa 💍",
+                "El Faro Luminoso 🗼✨", "El Ancla Segura ⚓", "La Puerta Abierta 🚪", "La Ventana Clara 🪟", "El Hogar Acogedor 🏡",
+                "El Pan Compartido 🍞", "El Agua Viva 💧", "La Luz Radiante 💡", "El Fuego Purificador 🔥", "La Voz Suave 🗣️"
+            ];
+            
+            const morals = [
+                "Compartir con amor multiplica la felicidad 💕🎉", "Confía en las alas que Dios te ha dado 🦋✨", "Hablar con verdad requiere valentía que Dios da 💪", "El trabajo constante produce grandes resultados 🌳🍎",
+                "La alabanza a Dios alegra el mundo 🎵🌍", "La perseverancia vence cualquier obstáculo ⭐💪", "Usa tu inteligencia para hacer el bien 🧠💕", "Dios cuida de quienes son generosos 🌰✨",
+                "La alegría del Señor es contagiosa 😊💖", "Jesús siempre nos busca cuando nos perdemos 🔍💕", "La fortaleza protege a los débiles 🦁🛡️", "Usa tus talentos para servir a otros 🦒💝",
+                "Un corazón agradecido es un corazón lleno 🐘💕", "El amor de Dios no tiene límites 🐋💖", "Brilla la luz de Cristo donde estés 🐟✨", "Dios da fuerzas para cada tarea 🐜💪",
+                "Escucha más, habla menos, sé sabio 🦉👂", "Los pacificadores son hijos de Dios 🕊️☮️", "Busca a Dios y encontrarás tesoros 🐱🔍💎", "La fidelidad a Dios nunca falla 🐕💖",
+                "Dios transforma cuando confiamos en Él 🐛➡️🦋", "Mantén tus ojos fijos en Jesús ☀️🌻", "Las circunstancias no definen quién eres 🌹💪", "Alimentarse de la Palabra trae fruto 🌳📖",
+                "Jesús guía nuestros pasos en la oscuridad ⭐🛤️", "Las misericordias de Dios son nuevas cada día ☀️🌅", "Refleja la gloria de Cristo 🌙✨", "Dios cumple cada promesa 🌈💯",
+                "El Espíritu Santo refresca nuestra alma ☁️💧", "De nosotros fluyen ríos de agua viva 🌊💕", "Edificar sobre Cristo nos mantiene firmes 🏠⛰️", "Busca profundo las riquezas de Dios 🐦💎",
+                "Dios nos poda para dar más fruto 🌺✂️", "El camino estrecho lleva a la vida 🛤️✨", "Jesús es el puente al Padre 🌉", "La fe pequeña crece enormemente 🌱🌳",
+                "La provisión de Dios llega a tiempo ⏰💕", "Siembra bien y cosecharás abundancia 🌱🌾", "Cristo vale más que cualquier posesión 💎", "Conocer a Cristo es la perla más preciosa 💍✨",
+                "Jesús guía a los perdidos a casa 🏡💕", "La esperanza en Dios es ancla del alma ⚓💖", "Entra por la puerta que es Cristo 🚪✨", "Abre tu corazón a la luz de Dios 🪟💡",
+                "El amor de Dios acoge a todos 🏡💕", "Lo poco con Dios se multiplica 🍞✨", "El agua viva de Jesús satisface 💧💖", "La luz de Cristo disipa la oscuridad 💡🌟",
+                "Dios nos refina como oro puro 🔥💛", "Escucha a Dios en el silencio 🗣️🤫"
+            ];
+            
+            let dayCounter = 0;
+            for (let month = 0; month < 12; month++) {
+                const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const themeIndex = dayCounter % themes.length;
+                    const iconIndex = dayCounter % icons.length;
+                    
+                    devos.push({
+                        month: month,
+                        day: day,
+                        theme: themes[themeIndex],
+                        icon: icons[iconIndex],
+                        verse: verses[dayCounter],
+                        explanation: verses[dayCounter].explanation,
+                        prayer: dailyPrayers[dayCounter],
+                        story: {
+                            theme: themes[themeIndex],
+                            title: `${storyTitles[dayCounter % storyTitles.length]} - Día ${dayCounter + 1}`,
+                            story: uniqueStories[dayCounter],
+                            moral: `🌟 Día ${dayCounter + 1}: ${morals[dayCounter % morals.length]}`,
+                            characters: allCharacters[dayCounter % allCharacters.length],
+                            illustration: allIllustrations[dayCounter % allIllustrations.length]
+                        }
+                    });
+                    dayCounter++;
+                }
+            }
+            return devos;
+        }
+
+        // Data SDK Handler
+        const dataHandler = {
+            onDataChanged(data) {
+                allUsers = data.filter(record => !record.record_type || record.record_type === 'user');
+                coloringLinks = data.filter(record => record.record_type === 'coloring_link');
+                completedDays = data.filter(record => record.record_type === 'completed_day');
+                
+                if (currentView === 'admin') {
+                    renderAdminPanel();
+                } else if (currentView === 'month') {
+                    showMonth(currentMonth);
+                } else if (currentView === 'devotional') {
+                    showDevotional(currentMonth, currentDay);
+                }
+            }
+        };
+
+        // Initialize
+        async function initializeApp() {
+            devotionals.push(...generateDevotionals());
+            
+            if (window.dataSdk) {
+                const initResult = await window.dataSdk.init(dataHandler);
+                if (!initResult.isOk) {
+                    console.error("Failed to initialize");
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                const adminExists = allUsers.find(u => u.username === 'admin' && u.role === 'admin');
+                if (!adminExists) {
+                    await window.dataSdk.create({
+                        username: 'admin',
+                        password: 'admin123',
+                        role: 'admin',
+                        record_type: 'user',
+                        created_at: new Date().toISOString(),
+                        devotionals_read: 0
+                    });
+                }
+            }
+            
+            renderLogin();
+        }
+
+        function renderLogin() {
+            const config = window.elementSdk?.config || defaultConfig;
+            currentView = 'login';
+            const content = document.getElementById('app-content');
+            document.getElementById('music-player').style.display = 'none';
+            
+            content.innerHTML = `
+                <div class="login-container">
+                    <div class="login-card">
+                        <div class="login-header">
+                            <div style="display: flex; justify-content: center; margin-bottom: 1.5rem;">
+                                <img src="https://lh3.googleusercontent.com/d/18Kaokz5ny5r6hmcAbN1wyhvZCylybYPl" alt="Logo" style="width: 280px; height: auto; animation: float 3s ease-in-out infinite; border: none !important; box-shadow: none !important; outline: none !important; background: none !important; filter: none !important;" loading="lazy" onerror="this.style.display='none'; this.alt='Logo no disponible';">
+                            </div>
+                            <h1 class="login-title">Devocional Infantil ✨</h1>
+                            <p class="login-subtitle">Inicia sesión para continuar 🙏</p>
+                        </div>
+                        
+                        <form id="login-form" onsubmit="handleLogin(event)">
+                            <div class="form-group">
+                                <label for="username" class="form-label">Usuario 👤</label>
+                                <input type="text" id="username" class="form-input" required placeholder="Ingresa tu usuario">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password" class="form-label">Contraseña 🔒</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="password" class="form-input" required placeholder="Ingresa tu contraseña">
+                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password', this)" aria-label="Mostrar contraseña">
+                                        👁️
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="login-button" id="login-btn">
+                                ✨ Entrar
+                            </button>
+                            
+                            <div class="error-message" id="error-message"></div>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            const user = allUsers.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                document.getElementById('music-player').style.display = 'flex';
+                renderHome();
+            } else {
+                const errorMsg = document.getElementById('error-message');
+                errorMsg.textContent = '❌ Usuario o contraseña incorrectos';
+                errorMsg.classList.add('show');
+            }
+        }
+
+        function togglePasswordVisibility(inputId, button) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+
+        function renderHome() {
+            const config = window.elementSdk?.config || defaultConfig;
+            currentView = 'home';
+            const content = document.getElementById('app-content');
+            
+            if (currentUser && currentUser.role === 'admin') {
+                content.innerHTML = `
+                    <div class="home-container">
+                        <div class="admin-panel">
+                            <div class="admin-header">
+                                <div>
+                                    <h1 class="admin-title">⚙️ Panel de Administración</h1>
+                                    <p style="color: #333;">Bienvenido, ${currentUser.username} ✨</p>
+                                </div>
+                                <button class="logout-button" onclick="logout()">🚪 Cerrar sesión</button>
+                            </div>
+                            
+                            <div class="admin-tabs">
+                                <button class="admin-tab active" onclick="showAdminTab('home')">
+                                    🏠 Inicio
+                                </button>
+                                <button class="admin-tab" onclick="showAdminTab('users')">
+                                    👥 Usuarios
+                                </button>
+                                <button class="admin-tab" onclick="showAdminTab('coloring')">
+                                    🎨 Enlaces Actividades
+                                </button>
+                            </div>
+                            
+                            <div id="admin-content"></div>
+                        </div>
+                    </div>
+                `;
+                showAdminTab('home');
+            } else {
+                content.innerHTML = `
+                    <div class="home-container">
+                        <div class="hero-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                                <div>
+                                    <h1 class="main-title">${config.main_title}</h1>
+                                    <p class="subtitle">${config.main_subtitle}</p>
+                                </div>
+                                <button class="logout-button" onclick="logout()">🚪 Salir</button>
+                            </div>
+                        </div>
+                        <div class="months-grid">
+                            ${months.map((month, index) => `
+                                <button class="month-button" onclick="showMonth(${index})" style="background: ${month.color}; color: #333;">
+                                    <span class="month-icon">${month.icon}</span>
+                                    <div>${month.name}</div>
+                                    <div class="month-theme-text">${month.theme}</div>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showAdminTab(tab) {
+            const config = window.elementSdk?.config || defaultConfig;
+            const adminContent = document.getElementById('admin-content');
+            
+            document.querySelectorAll('.admin-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            if (tab === 'home') {
+                adminContent.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <h2 style="font-size: 2rem; color: #FFB6D9; margin-bottom: 1rem;">📖 Calendario de Devocionales ✨</h2>
+                        <p style="font-size: 1.2rem; color: #333; margin-bottom: 2rem;">Selecciona un mes para ver los devocionales 🌟</p>
+                    </div>
+                    <div class="months-grid">
+                        ${months.map((month, index) => `
+                            <button class="month-button" onclick="showMonth(${index})" style="background: ${month.color}; color: #333;">
+                                <span class="month-icon">${month.icon}</span>
+                                <div>${month.name}</div>
+                                <div class="month-theme-text">${month.theme}</div>
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (tab === 'users') {
+                renderUsersTab();
+            } else if (tab === 'coloring') {
+                renderColoringTab();
+            }
+        }
+
+        function renderUsersTab() {
+            const config = window.elementSdk?.config || defaultConfig;
+            const adminContent = document.getElementById('admin-content');
+            
+            const regularUsers = allUsers.filter(u => u.role !== 'admin');
+            
+            adminContent.innerHTML = `
+                <div class="create-user-section">
+                    <h3 class="create-user-title">➕ Crear Nuevo Usuario ✨</h3>
+                    <form id="create-user-form" onsubmit="createUser(event)">
+                        <div class="form-group">
+                            <label for="new-username" class="form-label">Usuario 👤</label>
+                            <input type="text" id="new-username" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password" class="form-label">Contraseña 🔒</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="new-password" class="form-input" required>
+                                <button type="button" class="password-toggle" onclick="togglePasswordVisibility('new-password', this)" aria-label="Mostrar contraseña">
+                                    👁️
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="login-button">
+                            ➕ Crear Usuario
+                        </button>
+                    </form>
+                </div>
+                
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: #333;">👥 Usuarios Registrados (${regularUsers.length})</h3>
+                <div class="users-grid" id="users-list">
+                    ${regularUsers.map(user => {
+                        const userCompleted = completedDays.filter(c => c.user_id === user.__backendId).length;
+                        return `
+                        <div class="user-card">
+                            <div class="user-info">
+                                <span class="user-icon">👤</span>
+                                <div class="user-details">
+                                    <h3 style="color: #333;">${user.username}</h3>
+                                    <div class="user-password">🔒 Contraseña: <strong>${user.password}</strong></div>
+                                    <div class="user-stats">📖 Devocionales leídos: ${userCompleted} de 365</div>
+                                    <span class="user-role role-user">Usuario</span>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <button class="change-password-button" onclick="changePassword('${user.__backendId}', '${user.username}')">🔐 Cambiar</button>
+                                <button class="delete-button" onclick="deleteUser('${user.__backendId}', '${user.username}')">🗑️ Eliminar</button>
+                            </div>
+                        </div>
+                    `}).join('')}
+                </div>
+            `;
+        }
+
+        function renderColoringTab() {
+            const config = window.elementSdk?.config || defaultConfig;
+            const adminContent = document.getElementById('admin-content');
+            
+            adminContent.innerHTML = `
+                <div class="coloring-links-section">
+                    <h3 class="create-user-title" style="color: #E65100;">🎨 Gestionar Enlaces para Actividades ✨</h3>
+                    <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #333;">Selecciona un mes y configura los enlaces de Google Drive para cada día 📁</p>
+                    
+                    <div class="coloring-month-selector">
+                        ${months.map((month, index) => `
+                            <button class="month-select-button" onclick="selectColoringMonth(${index})" id="month-btn-${index}">
+                                ${month.icon} ${month.name}
+                            </button>
+                        `).join('')}
+                    </div>
+                    
+                    <div id="coloring-days-container"></div>
+                </div>
+            `;
+        }
+
+        function selectColoringMonth(monthIndex) {
+            const config = window.elementSdk?.config || defaultConfig;
+            const month = months[monthIndex];
+            const monthDevotionals = devotionals.filter(d => d.month === monthIndex);
+            
+            document.querySelectorAll('.month-select-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById(`month-btn-${monthIndex}`).classList.add('selected');
+            
+            const container = document.getElementById('coloring-days-container');
+            container.innerHTML = `
+                <h4 style="font-size: 1.3rem; margin-bottom: 1rem; color: #FFB6D9;">📅 Días de ${month.name}</h4>
+                <div class="coloring-days-grid">
+                    ${monthDevotionals.map(devo => {
+                        const existingLink = coloringLinks.find(l => l.month === monthIndex && l.day === devo.day);
+                        const hasLink = existingLink && existingLink.link && existingLink.link.trim() !== '';
+                        
+                        return `
+                            <div class="coloring-day-card">
+                                <div class="coloring-day-header">
+                                    <span class="coloring-day-title">Día ${devo.day}</span>
+                                    <span class="link-status ${hasLink ? 'configured' : 'not-configured'}">
+                                        ${hasLink ? '✅ Configurado' : '❌ Sin configurar'}
+                                    </span>
+                                </div>
+                                <input 
+                                    type="url" 
+                                    class="coloring-link-input" 
+                                    placeholder="https://drive.google.com/..." 
+                                    value="${existingLink?.link || ''}"
+                                    id="link-${monthIndex}-${devo.day}"
+                                >
+                                <button 
+                                    class="save-link-button" 
+                                    onclick="saveColoringLink(${monthIndex}, ${devo.day})"
+                                >
+                                    💾 Guardar Enlace
+                                </button>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        async function createUser(event) {
+            event.preventDefault();
+            if (isLoading) return;
+            
+            isLoading = true;
+            const button = event.target.querySelector('button[type="submit"]');
+            button.disabled = true;
+            button.innerHTML = '<span class="loading-spinner"></span> Creando...';
+            
+            const username = document.getElementById('new-username').value.trim();
+            const password = document.getElementById('new-password').value;
+            
+            const existingUser = allUsers.find(u => u.username === username);
+            if (existingUser) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message show';
+                errorDiv.textContent = '❌ Este nombre de usuario ya existe';
+                errorDiv.style.marginTop = '1rem';
+                event.target.appendChild(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000);
+                button.disabled = false;
+                button.innerHTML = '➕ Crear Usuario';
+                isLoading = false;
+                return;
+            }
+            
+            const result = await window.dataSdk.create({
+                username: username,
+                password: password,
+                role: 'user',
+                record_type: 'user',
+                created_at: new Date().toISOString(),
+                devotionals_read: 0
+            });
+            
+            if (result.isOk) {
+                document.getElementById('new-username').value = '';
+                document.getElementById('new-password').value = '';
+                await new Promise(resolve => setTimeout(resolve, 300));
+                renderUsersTab();
+            } else {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message show';
+                errorDiv.textContent = '❌ Error al crear usuario';
+                errorDiv.style.marginTop = '1rem';
+                event.target.appendChild(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000);
+            }
+            
+            isLoading = false;
+        }
+
+        async function handleChangePassword(userId, username) {
+            if (isLoading) return;
+            
+            const newPassword = prompt(`🔐 Ingresa la nueva contraseña para el usuario "${username}":`);
+            if (!newPassword || newPassword.trim() === '') return;
+            
+            isLoading = true;
+            
+            const userRecord = allUsers.find(u => u.__backendId === userId);
+            if (!userRecord) {
+                isLoading = false;
+                return;
+            }
+            
+            const updatedUser = {
+                __backendId: userRecord.__backendId,
+                username: userRecord.username,
+                password: newPassword.trim(),
+                role: userRecord.role,
+                record_type: userRecord.record_type,
+                created_at: userRecord.created_at,
+                devotionals_read: userRecord.devotionals_read || 0
+            };
+            
+            const result = await window.dataSdk.update(updatedUser);
+            
+            if (result.isOk) {
+                const successDiv = document.createElement('div');
+                successDiv.style.cssText = 'position: fixed; top: 2rem; right: 2rem; background: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%); color: white; padding: 1rem 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; font-weight: 600;';
+                successDiv.textContent = `✅ Contraseña actualizada para "${username}"`;
+                document.body.appendChild(successDiv);
+                setTimeout(() => successDiv.remove(), 3000);
+                await new Promise(resolve => setTimeout(resolve, 300));
+                renderUsersTab();
+            } else {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'position: fixed; top: 2rem; right: 2rem; background: linear-gradient(135deg, #FF9999 0%, #FFB3B3 100%); color: white; padding: 1rem 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; font-weight: 600;';
+                errorDiv.textContent = '❌ Error al cambiar la contraseña';
+                document.body.appendChild(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000);
+            }
+            
+            isLoading = false;
+        }
+
+        async function handleDeleteUser(userId, username) {
+            if (isLoading) return;
+            
+            const userRecord = allUsers.find(u => u.__backendId === userId);
+            if (!userRecord) return;
+            
+            const confirmDelete = confirm(`¿Seguro que quieres eliminar al usuario "${username}"? 🗑️`);
+            if (!confirmDelete) return;
+            
+            isLoading = true;
+            
+            const result = await window.dataSdk.delete(userRecord);
+            if (result.isOk) {
+                const successDiv = document.createElement('div');
+                successDiv.style.cssText = 'position: fixed; top: 2rem; right: 2rem; background: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%); color: white; padding: 1rem 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; font-weight: 600;';
+                successDiv.textContent = `✅ Usuario eliminado exitosamente`;
+                document.body.appendChild(successDiv);
+                setTimeout(() => successDiv.remove(), 3000);
+                await new Promise(resolve => setTimeout(resolve, 300));
+                renderUsersTab();
+            } else {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'position: fixed; top: 2rem; right: 2rem; background: linear-gradient(135deg, #FF9999 0%, #FFB3B3 100%); color: white; padding: 1rem 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; font-weight: 600;';
+                errorDiv.textContent = '❌ Error al eliminar usuario';
+                document.body.appendChild(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000);
+            }
+            
+            isLoading = false;
+        }
+
+        window.changePassword = handleChangePassword;
+        window.deleteUser = handleDeleteUser;
+        window.selectColoringMonth = selectColoringMonth;
+        window.saveColoringLink = saveColoringLink;
+        window.showAdminTab = showAdminTab;
+        window.createUser = createUser;
+
+        async function saveColoringLink(monthIndex, day) {
+            if (isLoading) return;
+            
+            isLoading = true;
+            const linkInput = document.getElementById(`link-${monthIndex}-${day}`);
+            const link = linkInput.value.trim();
+            
+            const existingLink = coloringLinks.find(l => l.month === monthIndex && l.day === day);
+            
+            if (existingLink) {
+                existingLink.link = link;
+                const result = await window.dataSdk.update(existingLink);
+                if (result.isOk) {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    selectColoringMonth(monthIndex);
+                }
+            } else {
+                const result = await window.dataSdk.create({
+                    month: monthIndex,
+                    day: day,
+                    link: link,
+                    record_type: 'coloring_link',
+                    created_at: new Date().toISOString()
+                });
+                if (result.isOk) {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    selectColoringMonth(monthIndex);
+                }
+            }
+            
+            isLoading = false;
+        }
+
+        window.logout = function() {
+            currentUser = null;
+            if (isMusicPlaying) {
+                toggleMusic();
+            }
+            renderLogin();
+        }
+
+        window.showMonth = showMonth;
+        window.showDevotional = showDevotional;
+        window.showStory = showStory;
+        window.openColoringLink = openColoringLink;
+        window.renderHome = renderHome;
+        window.handleLogin = handleLogin;
+        window.togglePasswordVisibility = togglePasswordVisibility;
+        window.toggleMusic = toggleMusic;
+        window.markAsComplete = markAsComplete;
+
+        function showMonth(monthIndex) {
+            const config = window.elementSdk?.config || defaultConfig;
+            currentView = 'month';
+            currentMonth = monthIndex;
+            const month = months[monthIndex];
+            const monthDevotionals = devotionals.filter(d => d.month === monthIndex);
+            
+            const content = document.getElementById('app-content');
+            content.innerHTML = `
+                <div>
+                    <div class="breadcrumb-nav">
+                        <div class="breadcrumb-item" onclick="renderHome()">
+                            🏠 Inicio
+                        </div>
+                        <span class="breadcrumb-separator">›</span>
+                        <div class="breadcrumb-current" style="background: ${month.color}; color: #333;">
+                            ${month.icon} ${month.name}
+                        </div>
+                    </div>
+                    
+                    <div class="month-header">
+                        <h1 class="month-title" style="color: #FFB6D9;">${month.icon} ${month.name} 2026</h1>
+                        <p class="month-theme">${month.theme}</p>
+                    </div>
+                    <div class="days-grid">
+                        ${monthDevotionals.map((devo) => {
+                            const isCompleted = completedDays.some(c => 
+                                c.user_id === currentUser.__backendId && 
+                                c.month === monthIndex && 
+                                c.day === devo.day
+                            );
+                            return `
+                            <div class="day-card ${isCompleted ? 'completed' : ''}" onclick="showDevotional(${monthIndex}, ${devo.day})" style="background: ${isCompleted ? '' : month.color}; color: #333;">
+                                <span class="day-number">${devo.day}</span>
+                                <span class="day-icon">${devo.icon}</span>
+                            </div>
+                        `}).join('')}
+                    </div>
+                    <div class="navigation-buttons">
+                        <button class="nav-button" onclick="renderHome()" style="background: linear-gradient(135deg, #A3C7FF 0%, #B8D4FF 100%); color: white;">
+                            🏠 ${config.home_text}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showDevotional(monthIndex, day) {
+            const config = window.elementSdk?.config || defaultConfig;
+            currentView = 'devotional';
+            currentMonth = monthIndex;
+            currentDay = day;
+            
+            const devo = devotionals.find(d => d.month === monthIndex && d.day === day);
+            const month = months[monthIndex];
+            
+            const isCompleted = completedDays.some(c => 
+                c.user_id === currentUser.__backendId && 
+                c.month === monthIndex && 
+                c.day === day
+            );
+            
+            // Calcular navegación
+            const totalDays = devotionals.length;
+            const currentDayIndex = devotionals.findIndex(d => d.month === monthIndex && d.day === day);
+            const prevDevo = currentDayIndex > 0 ? devotionals[currentDayIndex - 1] : null;
+            const nextDevo = currentDayIndex < totalDays - 1 ? devotionals[currentDayIndex + 1] : null;
+            
+            const content = document.getElementById('app-content');
+            content.innerHTML = `
+                <div class="devotional-container">
+                    <div class="breadcrumb-nav">
+                        <div class="breadcrumb-item" onclick="renderHome()">
+                            🏠 Inicio
+                        </div>
+                        <span class="breadcrumb-separator">›</span>
+                        <div class="breadcrumb-item" onclick="showMonth(${monthIndex})">
+                            ${month.icon} ${month.name}
+                        </div>
+                        <span class="breadcrumb-separator">›</span>
+                        <div class="breadcrumb-current" style="background: linear-gradient(135deg, #FFB6D9 0%, #FFC5E5 100%); color: white;">
+                            Día ${day}
+                        </div>
+                    </div>
+                    
+                    <div class="devotional-card">
+                        <div class="devotional-header">
+                            <p class="devotional-date">${day} de ${month.name.toLowerCase()}</p>
+                            <div class="devotional-emoji">${devo.icon}</div>
+                            <h1 class="devotional-theme" style="color: #FFB6D9;">${devo.theme}</h1>
+                        </div>
+                        
+                        <div class="verse-section">
+                            <p class="verse-label">📖 Versículo del día:</p>
+                            <p class="verse-text">"${devo.verse.text}"</p>
+                            <p class="verse-reference" style="color: #FFB6D9;">- ${devo.verse.ref}</p>
+                        </div>
+                        
+                        <div class="explanation-section">
+                            <h2 class="explanation-title" style="color: #FFB6D9;">💭 Para ti:</h2>
+                            <p class="explanation-text">${devo.explanation}</p>
+                        </div>
+                        
+                        <div class="prayer-section">
+                            <h2 class="prayer-title" style="color: #A3C7FF;">
+                                🙏 Oración del día:
+                            </h2>
+                            <p class="prayer-text">${devo.prayer}</p>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="action-button mark-complete-button ${isCompleted ? 'completed' : ''}" onclick="markAsComplete(${monthIndex}, ${day})" style="background: ${isCompleted ? 'linear-gradient(135deg, #66BB6A 0%, #81C784 100%)' : 'linear-gradient(135deg, #81C784 0%, #A5D6A7 100%)'};">
+                                <span class="action-button-icon">${isCompleted ? '✅' : '✓'}</span>
+                                <span>${isCompleted ? 'Completado' : 'Marcar como leído'}</span>
+                            </button>
+                            <button class="action-button" onclick="showStory(${monthIndex}, ${day})" style="background: linear-gradient(135deg, #FFB6D9 0%, #FFC5E5 100%); color: white;">
+                                <span class="action-button-icon">📖</span>
+                                <span>${config.read_story_text}</span>
+                            </button>
+                            <button class="action-button" onclick="openColoringLink(${monthIndex}, ${day})" style="background: linear-gradient(135deg, #A3C7FF 0%, #B8D4FF 100%); color: white;">
+                                <span class="action-button-icon">🎨</span>
+                                <span>${config.coloring_text}</span>
+                            </button>
+                        </div>
+                        
+                        <div class="navigation-buttons">
+                            ${prevDevo ? `
+                                <button class="nav-button" onclick="showDevotional(${prevDevo.month}, ${prevDevo.day})" style="background: linear-gradient(135deg, #D4A5FF 0%, #E5C7FF 100%); color: white;">
+                                    ⬅ Día anterior
+                                </button>
+                            ` : ''}
+                            <button class="nav-button" onclick="showMonth(${monthIndex})" style="background: linear-gradient(135deg, #FFB6D9 0%, #FFC5E5 100%); color: white;">
+                                📅 ${config.back_to_calendar_text}
+                            </button>
+                            <button class="nav-button" onclick="renderHome()" style="background: linear-gradient(135deg, #A3C7FF 0%, #B8D4FF 100%); color: white;">
+                                🏠 ${config.home_text}
+                            </button>
+                            ${nextDevo ? `
+                                <button class="nav-button" onclick="showDevotional(${nextDevo.month}, ${nextDevo.day})" style="background: linear-gradient(135deg, #D4A5FF 0%, #E5C7FF 100%); color: white;">
+                                    Día siguiente ➡
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function markAsComplete(monthIndex, day) {
+            if (isLoading) return;
+            
+            const existingCompletion = completedDays.find(c => 
+                c.user_id === currentUser.__backendId && 
+                c.month === monthIndex && 
+                c.day === day
+            );
+            
+            if (existingCompletion) {
+                // Ya está completado, mostramos mensaje
+                const msgDiv = document.createElement('div');
+                msgDiv.style.cssText = 'position: fixed; top: 2rem; right: 2rem; background: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%); color: white; padding: 1rem 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; font-weight: 600;';
+                msgDiv.textContent = '✅ ¡Ya marcaste este día como completado! 🎉';
+                document.body.appendChild(msgDiv);
+                setTimeout(() => msgDiv.remove(), 3000);
+                return;
+            }
+            
+            isLoading = true;
+            
+            const result = await window.dataSdk.create({
+                user_id: currentUser.__backendId,
+                month: monthIndex,
+                day: day,
+                completed: true,
+                record_type: 'completed_day',
+                completed_at: new Date().toISOString()
+            });
+            
+            if (result.isOk) {
+                const successDiv = document.createElement('div');
+                successDiv.style.cssText = 'position: fixed; top: 2rem; right: 2rem; background: linear-gradient(135deg, #81C784 0%, #A5D6A7 100%); color: white; padding: 1rem 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; font-weight: 600; animation: pop 0.5s ease;';
+                successDiv.textContent = '🎉 ¡Día completado! ¡Sigue así! ✨';
+                document.body.appendChild(successDiv);
+                setTimeout(() => successDiv.remove(), 3000);
+                
+                await new Promise(resolve => setTimeout(resolve, 300));
+                showDevotional(monthIndex, day);
+            }
+            
+            isLoading = false;
+        }
+
+        function openColoringLink(monthIndex, day) {
+            const coloringLink = coloringLinks.find(l => l.month === monthIndex && l.day === day);
+            
+            if (coloringLink && coloringLink.link && coloringLink.link.trim() !== '') {
+                window.open(coloringLink.link, '_blank', 'noopener,noreferrer');
+            } else {
+                const msgDiv = document.createElement('div');
+                msgDiv.style.cssText = 'position: fixed; top: 2rem; right: 2rem; background: linear-gradient(135deg, #FFB3B3 0%, #FFC9C9 100%); color: white; padding: 1rem 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 10000; font-weight: 600;';
+                msgDiv.textContent = '🎨 Aún no hay actividades para este día ✨';
+                document.body.appendChild(msgDiv);
+                setTimeout(() => msgDiv.remove(), 3000);
+            }
+        }
+
+        function showStory(monthIndex, day) {
+            const config = window.elementSdk?.config || defaultConfig;
+            currentView = 'story';
+            
+            const devo = devotionals.find(d => d.month === monthIndex && d.day === day);
+            const month = months[monthIndex];
+            const story = devo.story;
+            
+            const content = document.getElementById('app-content');
+            content.innerHTML = `
+                <div class="story-container">
+                    <div class="breadcrumb-nav">
+                        <div class="breadcrumb-item" onclick="renderHome()">
+                            🏠 Inicio
+                        </div>
+                        <span class="breadcrumb-separator">›</span>
+                        <div class="breadcrumb-item" onclick="showMonth(${monthIndex})">
+                            ${month.icon} ${month.name}
+                        </div>
+                        <span class="breadcrumb-separator">›</span>
+                        <div class="breadcrumb-item" onclick="showDevotional(${monthIndex}, ${day})">
+                            Día ${day}
+                        </div>
+                        <span class="breadcrumb-separator">›</span>
+                        <div class="breadcrumb-current" style="background: linear-gradient(135deg, #FFB6D9 0%, #FFC5E5 100%); color: white;">
+                            📖 Historia
+                        </div>
+                    </div>
+                    
+                    <div class="story-card">
+                        <div class="story-header">
+                            <h1 class="story-title">${story.title}</h1>
+                            <div class="story-theme-badge" style="background: linear-gradient(135deg, #FFB6D9 0%, #FFD1E8 100%); color: white;">
+                                ✨ ${story.theme} ✨
+                            </div>
+                        </div>
+                        
+                        <div class="story-illustration">${story.illustration}</div>
+                        
+                        <div class="story-characters">
+                            ${story.characters.map(char => `<span class="character">${char}</span>`).join('')}
+                        </div>
+                        
+                        <div class="decorative-divider">⭐ ✨ 💖 ✨ ⭐</div>
+                        
+                        <div class="story-content">
+                            <p class="story-text">${story.story}</p>
+                        </div>
+                        
+                        <div class="decorative-divider">🌟 💖 💫 💖 🌟</div>
+                        
+                        <div class="story-moral">
+                            <div class="story-moral-title" style="color: #FFB6D9;">
+                                💖 Mensaje especial:
+                            </div>
+                            <p class="story-moral-text">${story.moral}</p>
+                        </div>
+                        
+                        <div class="navigation-buttons">
+                            <button class="nav-button" onclick="showDevotional(${monthIndex}, ${day})" style="background: linear-gradient(135deg, #FFB6D9 0%, #FFC5E5 100%); color: white;">
+                                ⬅ ${config.back_to_devotional_text}
+                            </button>
+                            <button class="nav-button" onclick="renderHome()" style="background: linear-gradient(135deg, #A3C7FF 0%, #B8D4FF 100%); color: white;">
+                                🏠 ${config.home_text}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function onConfigChange(config) {
+            if (currentView === 'login') {
+                renderLogin();
+            } else if (currentView === 'home') {
+                renderHome();
+            }
+        }
+
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig: defaultConfig,
+                onConfigChange: onConfigChange,
+                mapToCapabilities: (config) => ({
+                    recolorables: [],
+                    borderables: [],
+                    fontEditable: undefined,
+                    fontSizeable: undefined
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ["main_title", config.main_title || defaultConfig.main_title],
+                    ["main_subtitle", config.main_subtitle || defaultConfig.main_subtitle],
+                    ["read_story_text", config.read_story_text || defaultConfig.read_story_text],
+                    ["coloring_text", config.coloring_text || defaultConfig.coloring_text],
+                    ["back_to_calendar_text", config.back_to_calendar_text || defaultConfig.back_to_calendar_text],
+                    ["home_text", config.home_text || defaultConfig.home_text],
+                    ["back_to_devotional_text", config.back_to_devotional_text || defaultConfig.back_to_devotional_text]
+                ])
+            });
+        }
+
+        initializeApp();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ccc5d147576c2db',t:'MTc3MDkwMjIxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
