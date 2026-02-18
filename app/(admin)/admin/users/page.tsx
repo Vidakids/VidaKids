@@ -2,11 +2,8 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { HiEye, HiEyeOff } from 'react-icons/hi';
 import { createUser, deleteUser, getUsers } from './actions';
+import { HiUserAdd, HiTrash, HiMail, HiUser, HiKey, HiEye, HiEyeOff } from 'react-icons/hi';
 
 interface UserRow {
   id: string;
@@ -86,202 +83,196 @@ export default function UsersPage() {
   };
 
   return (
-    <div>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Create New User Section */}
-        <div className="bg-green-50 rounded-3xl p-8 mb-8 border-2 border-green-100">
-          <h2 className="text-3xl font-bold text-green-700 mb-8 flex items-center gap-2">
-            <span className="text-2xl">+</span>
-            Crear Nuevo Usuario
-            <span className="text-2xl">✨</span>
-          </h2>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-4xl mx-auto"
+    >
+      {/* Create New User Section */}
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-[20px] sm:rounded-[30px] p-5 sm:p-8 mb-8 border-2 border-green-100 shadow-sm">
+        <h2 className="flex items-center gap-2 text-xl sm:text-2xl font-bold text-green-700 mb-6">
+          <HiUserAdd /> Crear Nuevo Usuario ✨
+        </h2>
 
-          <div className="space-y-6">
-            {/* Email Input */}
-            <div>
-              <label className="block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                Email
-                <span className="text-xl">📧</span>
-              </label>
-              <Input
+        <div className="space-y-4 sm:space-y-5">
+          {/* Email */}
+          <div>
+            <label className="block mb-2 font-semibold text-sm sm:text-base text-gray-700">
+              Email 📧
+            </label>
+            <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <HiMail size={18} />
+                </div>
+                <input
                 type="email"
                 placeholder="usuario@ejemplo.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-pink-400 focus:ring-4 focus:ring-pink-200 outline-none transition-all bg-white text-gray-800 placeholder-gray-400"
-              />
+                className="w-full pl-10 pr-4 py-3 sm:py-3.5 bg-white border-2 border-green-100 rounded-2xl sm:rounded-3xl text-sm sm:text-base focus:border-green-300 focus:ring-4 focus:ring-green-100 transition-all outline-none"
+                />
             </div>
+          </div>
 
-            {/* Username Input */}
-            <div>
-              <label className="block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                Nombre de usuario
-                <span className="text-xl">👤</span>
-              </label>
-              <Input
+          {/* Username */}
+          <div>
+            <label className="block mb-2 font-semibold text-sm sm:text-base text-gray-700">
+              Nombre de usuario 👤
+            </label>
+            <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <HiUser size={18} />
+                </div>
+                <input
                 type="text"
                 placeholder="Ingresa el nombre de usuario"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-pink-400 focus:ring-4 focus:ring-pink-200 outline-none transition-all bg-white text-gray-800 placeholder-gray-400"
-              />
-            </div>
-
-            {/* Password Input */}
-            <div>
-              <label className="block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                Contraseña
-                <span className="text-xl">🔐</span>
-              </label>
-              <div className="relative">
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Mínimo 6 caracteres"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-pink-400 focus:ring-4 focus:ring-pink-200 outline-none transition-all bg-white text-gray-800 placeholder-gray-400 pr-12"
+                className="w-full pl-10 pr-4 py-3 sm:py-3.5 bg-white border-2 border-green-100 rounded-2xl sm:rounded-3xl text-sm sm:text-base focus:border-green-300 focus:ring-4 focus:ring-green-100 transition-all outline-none"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-pink-500 transition-colors"
-                >
-                  {showPassword ? <HiEyeOff size={20} /> : <HiEye size={20} />}
-                </button>
-              </div>
             </div>
-
-            {/* Error / Success Messages */}
-            {formError && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-red-50 border border-red-200 text-red-600 rounded-2xl px-4 py-3 text-sm font-medium"
-              >
-                ❌ {formError}
-              </motion.div>
-            )}
-            {formSuccess && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-green-100 border border-green-200 text-green-700 rounded-2xl px-4 py-3 text-sm font-medium"
-              >
-                {formSuccess}
-              </motion.div>
-            )}
-
-            {/* Create Button */}
-            <Button
-              onClick={handleCreateUser}
-              disabled={isPending || !email || !username || !password}
-              className="w-full bg-pink-300 hover:bg-pink-400 text-white rounded-2xl py-3 text-lg font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-            >
-              {isPending ? (
-                <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                  />
-                  Creando...
-                </>
-              ) : (
-                <>
-                  <span className="text-xl">+</span>
-                  Crear Usuario
-                </>
-              )}
-            </Button>
           </div>
-        </div>
 
-        {/* Registered Users Section */}
-        <div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <span className="text-2xl">👥</span>
-            Usuarios Registrados ({users.length})
-          </h3>
-
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-8 h-8 border-3 border-pink-300 border-t-pink-500 rounded-full"
+          {/* Password */}
+          <div>
+            <label className="block mb-2 font-semibold text-sm sm:text-base text-gray-700">
+              Contraseña 🔐
+            </label>
+            <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <HiKey size={18} />
+                </div>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Mínimo 6 caracteres"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-10 pr-12 py-3 sm:py-3.5 bg-white border-2 border-green-100 rounded-2xl sm:rounded-3xl text-sm sm:text-base focus:border-green-300 focus:ring-4 focus:ring-green-100 transition-all outline-none"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-green-600 cursor-pointer"
+              >
+                {showPassword ? <HiEyeOff size={20} /> : <HiEye size={20} />}
+              </button>
             </div>
-          ) : users.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
-              <p className="text-4xl mb-3">👤</p>
-              <p className="font-medium">No hay usuarios registrados</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {users.map((user, index) => (
-                <motion.div
-                  key={user.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className="bg-white rounded-2xl p-6 border-2 border-gray-100 hover:shadow-lg transition-shadow"
-                >
-                  <div className="flex items-start gap-4">
-                    {/* Avatar */}
-                    <div className="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                      {user.username.charAt(0).toUpperCase()}
-                    </div>
+          </div>
 
-                    {/* User Info */}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-xl font-bold text-gray-800 mb-1">{user.username}</h4>
-                      <p className="text-sm text-gray-400 mb-2 truncate">📧 {user.email}</p>
-
-                      <div className="text-pink-500 font-semibold mb-3 flex items-center gap-1">
-                        <span>📖</span>
-                        Devocionales leídos: {user.devotionalsRead} de 365
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Badge className={
-                          user.role === 'admin'
-                            ? 'bg-purple-100 text-purple-700 hover:bg-purple-100'
-                            : 'bg-blue-100 text-blue-700 hover:bg-blue-100'
-                        }>
-                          {user.role === 'admin' ? '👑 Admin' : '👤 Usuario'}
-                        </Badge>
-                        {user.created_at && (
-                          <span className="text-xs text-gray-300">
-                            Desde {new Date(user.created_at).toLocaleDateString('es-ES')}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Delete Button (only for non-admin users) */}
-                    {user.role !== 'admin' && (
-                      <div className="flex gap-2 flex-shrink-0">
-                        <Button
-                          onClick={() => handleDeleteUser(user.id, user.username)}
-                          disabled={isPending}
-                          className="bg-pink-300 hover:bg-pink-400 text-white rounded-2xl px-6 py-2 font-semibold flex items-center gap-2 transition-all disabled:opacity-50"
-                        >
-                          <span className="text-lg">🗑️</span>
-                          Eliminar
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+          {/* Error / Success */}
+          {formError && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="bg-red-50 border-l-4 border-red-400 rounded-r-xl p-4 text-red-700 text-sm sm:text-base"
+            >
+              ❌ {formError}
+            </motion.div>
           )}
+          {formSuccess && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="bg-green-100 border-l-4 border-green-500 rounded-r-xl p-4 text-green-800 text-sm sm:text-base"
+            >
+              {formSuccess}
+            </motion.div>
+          )}
+
+          {/* Create Button */}
+          <motion.button
+            onClick={handleCreateUser}
+            disabled={isPending || !email || !username || !password}
+            whileHover={!isPending ? { translateY: -2 } : {}}
+            whileTap={!isPending ? { scale: 0.98 } : {}}
+            className="w-full py-3.5 sm:py-4 bg-gradient-to-r from-pink-400 to-pink-300 text-white font-bold rounded-2xl sm:rounded-3xl shadow-lg shadow-pink-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base sm:text-lg transition-transform"
+          >
+            {isPending ? (
+              <>
+                <motion.div
+                  className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                />
+                Creando...
+              </>
+            ) : (
+              <>➕ Crear Usuario</>
+            )}
+          </motion.button>
         </div>
-      </motion.div>
-    </div>
+      </div>
+
+      {/* Registered Users */}
+      <h3 className="flex items-center gap-2 mb-4 text-xl sm:text-2xl font-bold text-gray-800">
+        👥 Usuarios Registrados ({users.length})
+      </h3>
+
+      {isLoading ? (
+        <div className="flex justify-center py-12">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className="w-8 h-8 border-3 border-pink-300 border-t-pink-500 rounded-full"
+          />
+        </div>
+      ) : users.length === 0 ? (
+        <div className="text-center py-12 text-gray-400">
+          <p className="text-4xl mb-3">👤</p>
+          <p className="font-medium">No hay usuarios registrados</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {users.map((user, index) => (
+            <motion.div
+              key={user.id}
+              initial={{ opacity: 0, x: 0 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              whileHover={{ scale: 1.01 }}
+              className="bg-white border border-gray-100 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            >
+              {/* User Info */}
+              <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 overflow-hidden">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">
+                  {user.role === 'admin' ? '👑' : '👤'}
+                </div>
+                
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                    <h4 className="font-bold text-base sm:text-lg text-gray-800 truncate">{user.username}</h4>
+                    <span className="text-xs sm:text-sm text-gray-400 truncate">{user.email}</span>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center gap-2 mt-1 sm:mt-0.5">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        user.role === 'admin' ? 'bg-amber-100 text-amber-700' : 'bg-blue-50 text-blue-600'
+                    }`}>
+                      {user.role === 'admin' ? 'Admin' : 'Usuario'}
+                    </span>
+                    <span className="text-[10px] sm:text-xs text-pink-400 font-medium bg-pink-50 px-2 py-0.5 rounded-full">
+                       📖 {user.devotionalsRead} leídos
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              {user.role !== 'admin' && (
+                <motion.button
+                  onClick={() => handleDeleteUser(user.id, user.username)}
+                  disabled={isPending}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full sm:w-auto px-4 py-2 sm:py-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <HiTrash /> Eliminar
+                </motion.button>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </motion.div>
   );
 }

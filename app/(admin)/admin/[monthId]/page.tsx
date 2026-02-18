@@ -147,10 +147,10 @@ export default function AdminDaysPage() {
                 whileHover={{ scale: 1.08, y: -3 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push(`/admin/${monthId}/${day}`)}
-                className={`relative rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center cursor-pointer border shadow-sm hover:shadow-md hover:border-pink-200 transition-all ${
+                className={`relative rounded-[20px] sm:rounded-[30px] p-3 sm:p-4 text-center cursor-pointer border shadow-sm hover:shadow-md hover:border-pink-200 transition-all flex flex-col items-center justify-center aspect-square ${
                   hasContent
                     ? 'bg-green-50/50 border-green-200/50'
-                    : 'bg-blue-50/50 border-blue-100/50'
+                    : 'bg-white border-gray-100'
                 }`}
               >
                 <p className="text-lg sm:text-xl font-extrabold text-gray-700 mb-0.5">{day}</p>

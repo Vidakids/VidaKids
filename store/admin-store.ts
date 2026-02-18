@@ -7,6 +7,8 @@ type Devotional = Tables<'devotionals'>;
 
 interface DevotionalForm {
   title: string;
+  story_title: string;
+  story_content: string;
   verse_text: string;
   verse_reference: string;
   reflection_content: string;
@@ -94,6 +96,8 @@ export const useAdminStore = create<AdminStore>((set, get) => {
             month_id: monthId,
             day_number: dayNumber,
             title: form.title,
+            story_title: form.story_title,
+            story_content: form.story_content,
             verse_text: form.verse_text,
             verse_reference: form.verse_reference,
             reflection_content: form.reflection_content,

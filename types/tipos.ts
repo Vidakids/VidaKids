@@ -82,6 +82,8 @@ export type Database = {
           month_id: number | null
           prayer_content: string | null
           reflection_content: string | null
+          story_content: string | null
+          story_title: string | null
           title: string | null
           updated_at: string | null
           verse_reference: string | null
@@ -94,6 +96,8 @@ export type Database = {
           month_id?: number | null
           prayer_content?: string | null
           reflection_content?: string | null
+          story_content?: string | null
+          story_title?: string | null
           title?: string | null
           updated_at?: string | null
           verse_reference?: string | null
@@ -106,6 +110,8 @@ export type Database = {
           month_id?: number | null
           prayer_content?: string | null
           reflection_content?: string | null
+          story_content?: string | null
+          story_title?: string | null
           title?: string | null
           updated_at?: string | null
           verse_reference?: string | null

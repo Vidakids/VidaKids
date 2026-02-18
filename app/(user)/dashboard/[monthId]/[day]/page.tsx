@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { HiChevronRight } from 'react-icons/hi';
-import { HiArrowRight } from 'react-icons/hi2';
+import { HiChevronRight, HiX } from 'react-icons/hi';
+import { HiArrowRight, HiHome } from 'react-icons/hi2';
 import { useUserView } from '@/lib/user-view-context';
 import { useUserStore } from '@/store/user-store';
 
@@ -21,6 +21,7 @@ export default function UserDayDetailPage() {
   const day = Number(params.day);
   const { setIsFullScreen } = useUserView();
   const { months, fetchMonths, fetchDevotionals, getDevotional, fetchActivity, activityUrl } = useUserStore();
+  const [isStoryOpen, setIsStoryOpen] = useState(false);
 
   const month = months.find((m) => m.id === monthId);
   const devotional = getDevotional(monthId, day);
@@ -46,72 +47,78 @@ export default function UserDayDetailPage() {
   }
 
   return (
-    <div>
-      {/* Breadcrumb */}
+    <div className="relative">
+      {/* breadcrumb */}
       <motion.div
         initial={{ opacity: 0, y: -5 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-full px-5 py-3 mb-6 flex items-center gap-2 shadow-sm border border-gray-100 w-fit"
+        className="bg-white rounded-full px-4 py-2 mb-6 flex items-center gap-2 shadow-sm border border-gray-100 w-fit"
       >
         <button
           onClick={() => router.push('/dashboard')}
-          className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 hover:text-pink-500 transition-colors cursor-pointer"
+          className="flex items-center gap-1 text-sm font-semibold text-gray-500 hover:text-pink-500 transition-colors"
         >
-          <span>🏠</span> Inicio
+          <HiHome size={16} />
         </button>
-        <HiChevronRight className="text-gray-300" size={16} />
+        <HiChevronRight className="text-gray-300" size={14} />
         <button
           onClick={() => router.push(`/dashboard/${monthId}`)}
-          className="flex items-center gap-1.5 text-sm font-bold text-gray-500 bg-blue-50 px-3 py-1 rounded-full hover:bg-blue-100 transition-colors cursor-pointer"
+          className="text-sm font-semibold text-gray-500 hover:text-pink-500 transition-colors"
         >
-          <span>{month.icon_name}</span> {month.name}
+          {month.name}
         </button>
-        <HiChevronRight className="text-gray-300" size={16} />
-        <span className="text-sm font-bold text-white bg-pink-400 px-3.5 py-1 rounded-full">
+        <HiChevronRight className="text-gray-300" size={14} />
+        <span className="text-sm font-bold text-pink-500 bg-pink-50 px-3 py-0.5 rounded-full">
           Día {day}
         </span>
       </motion.div>
 
-      {/* Day Header */}
+      {/* Header Card (45px radius) */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.12 }}
-        className="bg-white rounded-3xl p-8 sm:p-10 text-center mb-6 border border-gray-100 shadow-sm"
+        transition={{ delay: 0.1 }}
+        style={{ borderRadius: '45px', background: 'white' }}
+        className="p-8 sm:p-10 text-center mb-6 shadow-sm border border-gray-100 relative overflow-hidden"
       >
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-700 mb-4">
-          {day} de {month.name.toLowerCase()}
+         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300" />
+         
+        <h2 className="text-lg sm:text-xl font-bold text-gray-400 mb-2 uppercase tracking-wide">
+          {day} de {month.name}
         </h2>
-        <motion.div
-          className="text-5xl sm:text-6xl mb-4"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-        >
-          {month.icon_name}
-        </motion.div>
-        <h3 className="text-2xl sm:text-3xl font-extrabold italic bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+        
+        <h3 className="text-2xl sm:text-4xl font-extrabold text-gray-800 mb-4 leading-tight">
           {devotional?.title ?? 'Devocional del día'}
         </h3>
-        <div className="mt-6 border-t-2 border-dashed border-pink-200" />
+        
+        <div className="flex justify-center gap-4 text-4xl sm:text-5xl my-4">
+             <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+             >
+                {month.icon_name}
+             </motion.div>
+        </div>
       </motion.div>
 
-      {/* Verse */}
+      {/* Verse Section (30px radius) */}
       {devotional?.verse_text && (
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-gradient-to-br from-orange-50 to-pink-50 rounded-3xl p-6 sm:p-8 mb-6 border border-orange-100/60"
+          style={{ borderRadius: '30px' }}
+          className="bg-orange-50 p-6 sm:p-8 mb-6 border border-orange-100"
         >
-          <p className="text-sm font-bold text-gray-600 mb-3 flex items-center gap-1.5">
-            <span>📖</span> Versículo del día:
+          <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+            📖 Versículo Clave
           </p>
-          <p className="text-base sm:text-lg font-semibold text-gray-700 italic leading-relaxed mb-4">
+          <p className="text-lg sm:text-xl font-serif text-gray-700 italic leading-relaxed mb-4 text-center">
             &ldquo;{devotional.verse_text}&rdquo;
           </p>
-          <p className="text-right text-sm font-bold text-pink-400 italic">
-            - {devotional.verse_reference}
+          <p className="text-center text-sm font-bold text-gray-500">
+            — {devotional.verse_reference}
           </p>
         </motion.div>
       )}
@@ -121,115 +128,159 @@ export default function UserDayDetailPage() {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.28 }}
-          className="mb-6"
+          transition={{ delay: 0.25 }}
+          className="mb-8 px-2"
         >
-          <h3 className="text-xl sm:text-2xl font-extrabold italic text-pink-400 flex items-center gap-2 mb-3">
-            <span>🔮</span> Para ti:
+          <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+            💡 Para pensar...
           </h3>
-          <p className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line">
+          <p className="text-base text-gray-600 leading-relaxed whitespace-pre-line">
             {devotional.reflection_content}
           </p>
         </motion.div>
       )}
 
-      {/* Prayer */}
+      {/* Prayer Section (30px radius) */}
       {devotional?.prayer_content && (
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-          className="bg-purple-50/70 rounded-3xl p-6 sm:p-8 mb-8 border border-purple-100/60"
+          transition={{ delay: 0.3 }}
+          style={{ borderRadius: '30px' }}
+          className="bg-purple-50 p-6 sm:p-8 mb-8 border border-purple-100"
         >
-          <h3 className="text-xl sm:text-2xl font-extrabold italic text-purple-400 flex items-center gap-2 mb-3">
-            <span>🙏</span> Oración del día:
+          <h3 className="text-lg font-bold text-purple-500 mb-3 flex items-center gap-2">
+            🙏 Oremos juntos
           </h3>
-          <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+          <p className="text-base text-gray-700 leading-relaxed italic">
             {devotional.prayer_content}
           </p>
         </motion.div>
       )}
 
-      {/* Action Cards */}
+      {/* Action Buttons (30px radius) */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="grid grid-cols-3 gap-3 sm:gap-4 mb-6"
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8"
       >
-        <motion.div
-          whileHover={{ scale: 1.05, y: -3 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-green-300 hover:bg-green-400 rounded-2xl p-5 sm:p-6 text-center cursor-pointer shadow-md transition-all"
+        <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setIsStoryOpen(true)}
+            style={{ borderRadius: '30px' }}
+            className="bg-pink-400 hover:bg-pink-500 text-white p-4 font-bold text-lg shadow-lg shadow-pink-200 flex items-center justify-center gap-2"
         >
-          <div className="text-3xl sm:text-4xl mb-2">✅</div>
-          <p className="text-xs sm:text-sm font-bold text-white">Completado</p>
-        </motion.div>
+            📚 Lee la historia
+        </motion.button>
 
-        <motion.div
-          whileHover={{ scale: 1.05, y: -3 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-pink-300 hover:bg-pink-400 rounded-2xl p-5 sm:p-6 text-center cursor-pointer shadow-md transition-all"
+        <motion.button
+            whileHover={activityUrl ? { scale: 1.02 } : {}}
+            whileTap={activityUrl ? { scale: 0.98 } : {}}
+            onClick={() => {
+                if (activityUrl) window.open(activityUrl, '_blank');
+            }}
+            disabled={!activityUrl}
+            style={{ borderRadius: '30px' }}
+            className={`p-4 font-bold text-lg shadow-lg flex items-center justify-center gap-2 ${
+                activityUrl 
+                ? 'bg-blue-400 hover:bg-blue-500 text-white shadow-blue-200' 
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            }`}
         >
-          <div className="text-3xl sm:text-4xl mb-2">📖</div>
-          <p className="text-xs sm:text-sm font-bold text-white">Lee la historia</p>
-        </motion.div>
-
-        <motion.div
-          whileHover={activityUrl ? { scale: 1.05, y: -3 } : {}}
-          whileTap={activityUrl ? { scale: 0.95 } : {}}
-          onClick={() => {
-            if (activityUrl) window.open(activityUrl, '_blank');
-          }}
-          className={`rounded-2xl p-5 sm:p-6 text-center shadow-md transition-all ${
-            activityUrl
-              ? 'bg-blue-300 hover:bg-blue-400 cursor-pointer'
-              : 'bg-gray-200 cursor-not-allowed opacity-50'
-          }`}
-        >
-          <div className="text-3xl sm:text-4xl mb-2">🎨</div>
-          <p className={`text-xs sm:text-sm font-bold ${activityUrl ? 'text-white' : 'text-gray-400'}`}>
-            {activityUrl ? 'Actividades' : 'Sin actividad'}
-          </p>
-        </motion.div>
+            🎨 {activityUrl ? 'Ver Actividad' : 'Sin Actividad'}
+        </motion.button>
       </motion.div>
 
       {/* Navigation */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.45 }}
-        className="flex flex-wrap items-center justify-center gap-3"
-      >
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
+      <div className="flex justify-between items-center mt-8">
+        <Button
+            variant="ghost" 
             onClick={() => router.push(`/dashboard/${monthId}`)}
-            className="bg-purple-300 hover:bg-purple-400 text-white rounded-full px-5 py-2.5 flex items-center gap-2 shadow-md text-sm font-semibold"
-          >
-            📅 Volver al calendario
-          </Button>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
-            onClick={() => router.push('/dashboard')}
-            className="bg-purple-300 hover:bg-purple-400 text-white rounded-full px-5 py-2.5 flex items-center gap-2 shadow-md text-sm font-semibold"
-          >
-            🏠 Página principal
-          </Button>
-        </motion.div>
-
+            className="text-gray-400 hover:text-gray-600"
+        >
+            ← Volver al calendario
+        </Button>
+        
         {day < daysInMonth && (
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              onClick={() => router.push(`/dashboard/${monthId}/${day + 1}`)}
-              className="bg-purple-300 hover:bg-purple-400 text-white rounded-full px-5 py-2.5 flex items-center gap-2 shadow-md text-sm font-semibold"
+             <Button
+                onClick={() => router.push(`/dashboard/${monthId}/${day + 1}`)}
+                className="bg-gray-800 text-white rounded-full px-6 py-2"
             >
-              Día siguiente <HiArrowRight size={14} />
+                Siguiente Día <HiArrowRight className="ml-2" />
             </Button>
-          </motion.div>
         )}
-      </motion.div>
+      </div>
+
+      {/* Story Overlay (50px card + Animated Characters) */}
+      <AnimatePresence>
+        {isStoryOpen && (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            >
+                <motion.div
+                    initial={{ scale: 0.9, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.9, y: 20 }}
+                    className="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto relative shadow-2xl"
+                    style={{ borderRadius: '50px', padding: '3rem 2rem' }}
+                >
+                    <button 
+                        onClick={() => setIsStoryOpen(false)}
+                        className="absolute top-6 right-6 p-2 bg-gray-100 rounded-full hover:bg-gray-200"
+                    >
+                        <HiX size={24} className="text-gray-500" />
+                    </button>
+
+                    <div className="text-center mb-8">
+                        <motion.div 
+                            initial={{ y: -20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-6xl mb-4 inline-block"
+                        >
+                            🦁
+                        </motion.div>
+                        <h2 className="text-3xl font-extrabold text-gray-800 mb-2">
+                            {devotional?.story_title || 'Historia Bíblica'}
+                        </h2>
+                        <p className="text-pink-500 font-bold">¡Una aventura increíble!</p>
+                    </div>
+
+                    <div className="space-y-4 text-gray-600 text-lg leading-relaxed text-center whitespace-pre-line">
+                        {devotional?.story_content ? (
+                            <p>{devotional.story_content}</p>
+                        ) : (
+                            <p>No hay historia disponible para este día.</p>
+                        )}
+                        
+                        <motion.div 
+                            animate={{ y: [0, -10, 0] }}
+                            transition={{ repeat: Infinity, duration: 2 }}
+                            className="flex justify-center gap-4 text-4xl mt-8 opacity-80"
+                        >
+                            <span>👧</span>
+                            <span>✨</span>
+                            <span>👦</span>
+                        </motion.div>
+                    </div>
+                    
+                    <div className="mt-10 text-center">
+                        <Button 
+                            onClick={() => setIsStoryOpen(false)}
+                            className="bg-pink-400 hover:bg-pink-500 text-white rounded-full px-8 py-3 text-lg font-bold shadow-lg shadow-pink-200"
+                        >
+                            ¡Entendido! 👍
+                        </Button>
+                    </div>
+                </motion.div>
+            </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

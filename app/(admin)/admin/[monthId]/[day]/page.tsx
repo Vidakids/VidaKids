@@ -19,6 +19,8 @@ const DAYS_IN_MONTH: Record<string, number> = {
 
 interface DayForm {
   title: string;
+  story_title: string;
+  story_content: string;
   verse_text: string;
   verse_reference: string;
   reflection_content: string;
@@ -27,7 +29,7 @@ interface DayForm {
 }
 
 const emptyForm: DayForm = {
-  title: '', verse_text: '', verse_reference: '',
+  title: '', story_title: '', story_content: '', verse_text: '', verse_reference: '',
   reflection_content: '', prayer_content: '', image_url: null,
 };
 
@@ -51,6 +53,8 @@ export default function AdminDayEditorPage() {
     if (dev) {
       setDayForm({
         title: dev.title ?? '',
+        story_title: dev.story_title ?? '',
+        story_content: dev.story_content ?? '',
         verse_text: dev.verse_text ?? '',
         verse_reference: dev.verse_reference ?? '',
         reflection_content: dev.reflection_content ?? '',
@@ -151,13 +155,13 @@ export default function AdminDayEditorPage() {
           <Input
             value={dayForm.title}
             onChange={(e) => updateField('title', e.target.value)}
-            className="border-gray-200 rounded-xl"
+            className="border-gray-200 rounded-[20px]"
             placeholder="El Osito Generoso 🐻💕"
           />
         </div>
 
         {/* Verse */}
-        <div className="bg-orange-50/60 rounded-2xl p-5 border border-orange-100/60">
+        <div className="bg-orange-50/60 rounded-[30px] p-5 border border-orange-100/60">
           <h3 className="text-sm font-bold text-gray-600 mb-3 flex items-center gap-1.5">
             📖 Versículo del día
           </h3>
@@ -168,7 +172,7 @@ export default function AdminDayEditorPage() {
                 value={dayForm.verse_text}
                 onChange={(e) => updateField('verse_text', e.target.value)}
                 rows={2}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:border-pink-300 focus:outline-none resize-none bg-white"
+                className="w-full border border-gray-200 rounded-[20px] px-3 py-2 text-sm focus:border-pink-300 focus:outline-none resize-none bg-white"
                 placeholder="En el principio creó Dios los cielos y la tierra."
               />
             </div>
@@ -177,11 +181,39 @@ export default function AdminDayEditorPage() {
               <Input
                 value={dayForm.verse_reference}
                 onChange={(e) => updateField('verse_reference', e.target.value)}
-                className="border-gray-200 rounded-xl"
+                className="border-gray-200 rounded-[20px]"
                 placeholder="Génesis 1:1"
               />
             </div>
           </div>
+        </div>
+
+        {/* Story Section */}
+        <div className="bg-pink-50/60 rounded-[30px] p-5 border border-pink-100/60">
+            <h3 className="text-sm font-bold text-gray-600 mb-3 flex items-center gap-1.5">
+                🦁 Historia del día
+            </h3>
+            <div className="space-y-3">
+                <div>
+                   <Label className="text-xs text-gray-400 mb-1">Título del Cuento</Label>
+                   <Input
+                        value={dayForm.story_title}
+                        onChange={(e) => updateField('story_title', e.target.value)}
+                        className="border-gray-200 rounded-[20px]"
+                        placeholder="El Osito Valiente..."
+                   />
+                </div>
+                <div>
+                   <Label className="text-xs text-gray-400 mb-1">Contenido del Cuento</Label>
+                   <textarea
+                        value={dayForm.story_content}
+                        onChange={(e) => updateField('story_content', e.target.value)}
+                        rows={6}
+                        className="w-full border border-gray-200 rounded-[20px] px-3 py-2 text-sm focus:border-pink-300 focus:outline-none resize-none bg-white"
+                        placeholder="Había una vez..."
+                   />
+                </div>
+            </div>
         </div>
 
         {/* Reflection */}
@@ -193,13 +225,13 @@ export default function AdminDayEditorPage() {
             value={dayForm.reflection_content}
             onChange={(e) => updateField('reflection_content', e.target.value)}
             rows={4}
-            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:border-pink-300 focus:outline-none resize-none bg-white"
+            className="w-full border border-gray-200 rounded-[20px] px-3 py-2 text-sm focus:border-pink-300 focus:outline-none resize-none bg-white"
             placeholder="Escribe la historia o reflexión para este día..."
           />
         </div>
 
         {/* Prayer */}
-        <div className="bg-purple-50/70 rounded-2xl p-5 border border-purple-100/60">
+        <div className="bg-purple-50/70 rounded-[30px] p-5 border border-purple-100/60">
           <h3 className="text-sm font-bold text-gray-600 mb-2 flex items-center gap-1.5">
             🙏 Oración del día
           </h3>
@@ -207,20 +239,20 @@ export default function AdminDayEditorPage() {
             value={dayForm.prayer_content}
             onChange={(e) => updateField('prayer_content', e.target.value)}
             rows={4}
-            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:border-pink-300 focus:outline-none resize-none bg-white"
+            className="w-full border border-gray-200 rounded-[20px] px-3 py-2 text-sm focus:border-pink-300 focus:outline-none resize-none bg-white"
             placeholder="Escribe la oración del día..."
           />
         </div>
 
         {/* Preview */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-[30px] p-5 border border-gray-100 shadow-sm">
           <h3 className="text-sm font-bold text-gray-500 mb-3">👁️ Vista previa</h3>
           <div className="text-center mb-3">
             <p className="text-lg font-extrabold italic bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent mt-2">
               {dayForm.title || 'Sin título'}
             </p>
           </div>
-          <div className="bg-orange-50/60 rounded-xl p-3 mb-3">
+          <div className="bg-orange-50/60 rounded-[20px] p-3 mb-3">
             <p className="text-sm italic text-gray-700">&ldquo;{dayForm.verse_text}&rdquo;</p>
             <p className="text-xs font-bold text-pink-400 text-right mt-1">- {dayForm.verse_reference}</p>
           </div>
@@ -231,7 +263,7 @@ export default function AdminDayEditorPage() {
 
         {/* Save + Nav buttons */}
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               onClick={handleSave}
               disabled={isSaving}
@@ -264,7 +296,7 @@ export default function AdminDayEditorPage() {
               variant="outline"
               className="rounded-full px-4 py-2.5 text-sm font-semibold border-gray-200 hover:bg-pink-50 disabled:opacity-40"
             >
-              Día siguiente <HiArrowRight size={14} />
+              <HiArrowLeft size={14} /> Día siguiente <HiArrowRight size={14} />
             </Button>
           </motion.div>
 

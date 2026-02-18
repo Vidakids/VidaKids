@@ -6,31 +6,12 @@ import { useRouter } from 'next/navigation';
 import { useUserView } from '@/lib/user-view-context';
 import { useUserStore } from '@/store/user-store';
 
-const MONTH_COLORS: Record<string, string> = {
-  '#E3F2FD': 'from-blue-100 to-blue-50',
-  '#FFE4F0': 'from-pink-100 to-pink-50',
-  '#FFE4E9': 'from-rose-100 to-rose-50',
-  '#F3E5F5': 'from-purple-100 to-purple-50',
-  '#FFF8E1': 'from-amber-100 to-amber-50',
-  '#FFF9C4': 'from-yellow-100 to-yellow-50',
-  '#E1F5FE': 'from-sky-100 to-sky-50',
-  '#FFF3E0': 'from-orange-100 to-orange-50',
-  '#F8BBD0': 'from-pink-200 to-pink-100',
-  '#FFE0B2': 'from-orange-200 to-orange-100',
-  '#F1E4F3': 'from-violet-100 to-violet-50',
-  '#E8F5E9': 'from-green-100 to-green-50',
-};
-
-function getGradient(hex: string | null) {
-  return MONTH_COLORS[hex ?? ''] ?? 'from-gray-100 to-gray-50';
-}
-
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.2 } },
+  visible: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.1 } },
 };
 const cardVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.92 },
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: 'easeOut' as const } },
 };
 
@@ -50,41 +31,112 @@ export default function UserMonthsPage() {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' as const }}
-          className="w-8 h-8 border-3 border-pink-300 border-t-pink-500 rounded-full"
+          style={{ width: 40, height: 40, borderWidth: 4, borderStyle: 'solid', borderColor: '#FFB6D9', borderTopColor: '#FF6B9D', borderRadius: '50%' }}
         />
       </div>
     );
   }
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
-    >
-      {months.map((item) => (
-        <motion.div
-          key={item.id}
-          variants={cardVariants}
-          whileHover={{ scale: 1.04, y: -5 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={() => router.push(`/dashboard/${item.id}`)}
-          className={`bg-gradient-to-br ${getGradient(item.color_hex)} rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center cursor-pointer border border-white/50 shadow-sm hover:shadow-lg transition-shadow`}
-        >
-          <motion.div
-            className="text-4xl sm:text-5xl mb-4"
-            whileHover={{ scale: 1.2, rotate: [0, -8, 8, 0] }}
-            transition={{ duration: 0.4 }}
+    <>
+      <style jsx global>{`
+        /* Month Button Styling */
+        .month-btn {
+            background: white;
+            border-radius: 25px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .month-btn:hover {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+
+        .month-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+        }
+        .month-name {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #333;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .month-theme {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 0.3rem;
+            font-weight: 500;
+        }
+
+        /* Responsive Breakpoints */
+        @media (min-width: 640px) {
+            .month-btn {
+                border-radius: 35px;
+                padding: 2.5rem 2rem;
+            }
+            .month-icon {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+            }
+            .month-name {
+                font-size: 1rem;
+            }
+            .month-theme {
+                font-size: 0.85rem;
+            }
+        }
+      `}</style>
+
+      {/* Months Grid */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8"
+      >
+        {months.map((item) => (
+          <motion.button
+            key={item.id}
+            variants={cardVariants}
+            whileHover={{ 
+                scale: 1.05, 
+                y: -10, 
+                rotate: -2,
+                transition: { type: "spring", stiffness: 300 } 
+            }}
+            whileTap={{ scale: 0.96 }}
+            onClick={() => router.push(`/dashboard/${item.id}`)}
+            className="month-btn"
           >
-            {item.icon_name}
-          </motion.div>
-          <h3 className="text-sm sm:text-base font-extrabold text-gray-700 tracking-wide mb-1">
-            {item.name}
-          </h3>
-          <p className="text-xs sm:text-sm text-gray-400 italic">{item.theme}</p>
-        </motion.div>
-      ))}
-    </motion.div>
+            <motion.div
+              className="month-icon"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' as const }}
+            >
+              {item.icon_name}
+            </motion.div>
+            <span className="month-name">
+              {item.name}
+            </span>
+            <span className="month-theme">
+              {item.theme}
+            </span>
+          </motion.button>
+        ))}
+      </motion.div>
+    </>
   );
 }
