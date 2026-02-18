@@ -5,9 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { HiChevronRight, HiX } from 'react-icons/hi';
-import { HiArrowRight, HiHome } from 'react-icons/hi2';
+import { HiArrowRight, HiHome, HiBookOpen } from 'react-icons/hi2';
 import { useUserView } from '@/lib/user-view-context';
 import { useUserStore } from '@/store/user-store';
+import CompleteButton from '@/components/devotional/complete-button';
 
 const DAYS_IN_MONTH: Record<string, number> = {
   Enero: 31, Febrero: 28, Marzo: 31, Abril: 30, Mayo: 31, Junio: 30,
@@ -20,19 +21,30 @@ export default function UserDayDetailPage() {
   const monthId = Number(params.monthId);
   const day = Number(params.day);
   const { setIsFullScreen } = useUserView();
-  const { months, fetchMonths, fetchDevotionals, getDevotional, fetchActivity, activityUrl } = useUserStore();
+  const { 
+    months, 
+    fetchMonths, 
+    fetchDevotionals, 
+    getDevotional, 
+    fetchActivity, 
+    activityUrl,
+    fetchProgress,
+    completedDays
+  } = useUserStore();
   const [isStoryOpen, setIsStoryOpen] = useState(false);
 
   const month = months.find((m) => m.id === monthId);
   const devotional = getDevotional(monthId, day);
   const daysInMonth = month ? (DAYS_IN_MONTH[month.name] ?? 30) : 30;
+  const isCompleted = completedDays.has(`${monthId}-${day}`);
 
   useEffect(() => {
     setIsFullScreen(true);
     if (months.length === 0) fetchMonths();
     fetchDevotionals(monthId);
     fetchActivity(monthId, day);
-  }, [monthId, day, setIsFullScreen, fetchMonths, fetchDevotionals, fetchActivity, months.length]);
+    fetchProgress(monthId);
+  }, [monthId, day, setIsFullScreen, fetchMonths, fetchDevotionals, fetchActivity, fetchProgress, months.length]);
 
   if (!month) {
     return (
@@ -165,14 +177,25 @@ export default function UserDayDetailPage() {
         transition={{ delay: 0.4 }}
         className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8"
       >
+        {/* 1. Completado (Green) - Server Action Component */}
+        <CompleteButton 
+          monthId={monthId} 
+          dayNumber={day} 
+          initialIsCompleted={isCompleted} 
+        />
+
+        {/* 2. Lee la historia (Pink) */}
         <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setIsStoryOpen(true)}
             style={{ borderRadius: '30px' }}
-            className="bg-pink-400 hover:bg-pink-500 text-white p-4 font-bold text-lg shadow-lg shadow-pink-200 flex items-center justify-center gap-2"
+            className="p-6 min-h-[140px] bg-pink-300 hover:bg-pink-400 text-white shadow-lg shadow-pink-200 flex flex-col items-center justify-center gap-3"
         >
-            📚 Lee la historia
+            <div className="p-4 rounded-xl bg-white/20">
+                <HiBookOpen size={32} />
+            </div>
+            <span className="font-bold text-lg">Lee la historia</span>
         </motion.button>
 
         <motion.button

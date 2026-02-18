@@ -7,6 +7,7 @@ type Devotional = Tables<'devotionals'>;
 
 interface UserStore {
   months: Month[];
+  completedDays: Set<string>;
   devotionals: Devotional[];
   activityUrl: string | null;
   isLoadingMonths: boolean;
@@ -16,6 +17,7 @@ interface UserStore {
   fetchDevotionals: (monthId: number) => Promise<void>;
   getDevotional: (monthId: number, dayNumber: number) => Devotional | undefined;
   fetchActivity: (monthId: number, dayNumber: number) => Promise<void>;
+  fetchProgress: (monthId: number) => Promise<void>;
 }
 
 export const useUserStore = create<UserStore>((set, get) => {
@@ -25,6 +27,7 @@ export const useUserStore = create<UserStore>((set, get) => {
     months: [],
     devotionals: [],
     activityUrl: null,
+    completedDays: new Set(),
     isLoadingMonths: false,
     isLoadingDevotionals: false,
 
@@ -63,6 +66,26 @@ export const useUserStore = create<UserStore>((set, get) => {
         .eq('is_configured', true)
         .single();
       set({ activityUrl: data?.drive_url ?? null });
+    },
+
+    fetchProgress: async (monthId) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('user_progress')
+        .select('day_number')
+        .eq('user_id', user.id)
+        .eq('month_id', monthId)
+        .eq('completed', true);
+
+      if (data) {
+        set((state) => {
+            const newSet = new Set(state.completedDays);
+            data.forEach(d => newSet.add(`${monthId}-${d.day_number}`));
+            return { completedDays: newSet };
+        });
+      }
     },
   };
 });
