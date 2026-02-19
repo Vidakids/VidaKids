@@ -16,6 +16,8 @@ interface DevotionalForm {
   image_url: string | null;
 }
 
+import { devotionalSchema } from '@/lib/schemas';
+
 interface AdminStore {
   // Estado
   months: Month[];
@@ -24,6 +26,7 @@ interface AdminStore {
   isLoadingDevotionals: boolean;
   isSaving: boolean;
   saved: boolean;
+  validationError: string | null;
 
   // Acciones — Meses
   fetchMonths: () => Promise<void>;
@@ -36,6 +39,7 @@ interface AdminStore {
 
   // UI
   setSaved: (v: boolean) => void;
+  clearValidationError: () => void;
 }
 
 export const useAdminStore = create<AdminStore>((set, get) => {
@@ -48,6 +52,7 @@ export const useAdminStore = create<AdminStore>((set, get) => {
     isLoadingDevotionals: false,
     isSaving: false,
     saved: false,
+    validationError: null,
 
     fetchMonths: async () => {
       set({ isLoadingMonths: true });
@@ -59,15 +64,20 @@ export const useAdminStore = create<AdminStore>((set, get) => {
     },
 
     updateMonth: async (id, updates) => {
-      const { error } = await supabase
-        .from('months')
-        .update(updates)
-        .eq('id', id);
+      // Import dynamically to avoid server-action-in-client-store issues if any, 
+      // but usually imports at top level are fine if the file is 'use client' or specific structure.
+      // Since this is a store, we'll invoke the action we just created.
+      const { updateMonthAction } = await import('@/app/actions/admin');
 
-      if (!error) {
+      try {
+        await updateMonthAction(id, { theme: updates.theme ?? undefined });
+        
         set((s) => ({
           months: s.months.map((m) => (m.id === id ? { ...m, ...updates } : m)),
         }));
+      } catch (error) {
+        console.error('Error calling updateMonthAction:', error);
+        // Optionally set an error state here
       }
     },
 
@@ -88,7 +98,18 @@ export const useAdminStore = create<AdminStore>((set, get) => {
     },
 
     saveDevotional: async (monthId, dayNumber, form) => {
-      set({ isSaving: true });
+      set({ isSaving: true, validationError: null });
+
+      // Validar con Zod
+      const validationResult = devotionalSchema.safeParse(form);
+      if (!validationResult.success) {
+        set({ 
+            isSaving: false, 
+            validationError: validationResult.error.issues[0].message 
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('devotionals')
         .upsert(
@@ -131,5 +152,6 @@ export const useAdminStore = create<AdminStore>((set, get) => {
     },
 
     setSaved: (v) => set({ saved: v }),
+    clearValidationError: () => set({ validationError: null }),
   };
 });

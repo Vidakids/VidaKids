@@ -6,6 +6,7 @@ import { useAdminStore } from '@/store/admin-store';
 import { createClient } from '@/lib/supabase/client';
 import type { Tables } from '@/types/tipos';
 import { HiArrowLeft, HiSave, HiExternalLink } from 'react-icons/hi';
+import { activitySchema } from '@/lib/schemas';
 
 type Activity = Tables<'activities'>;
 type Month = Tables<'months'>;
@@ -36,6 +37,7 @@ export default function ActivitiesPage() {
   const [links, setLinks] = useState<DayLink[]>([]);
   const [savingDay, setSavingDay] = useState<number | null>(null);
   const [isLoadingActivities, setIsLoadingActivities] = useState(false);
+  const [errors, setErrors] = useState<Record<number, string>>({});
 
   const supabase = createClient();
 
@@ -50,6 +52,7 @@ export default function ActivitiesPage() {
   const handleSelectMonth = async (month: Month) => {
     setSelectedMonth(month);
     setIsLoadingActivities(true);
+    setErrors({});
     const daysInMonth = DAYS_IN_MONTH[month.name] ?? 30;
 
     const { data: activities } = await supabase
@@ -75,20 +78,42 @@ export default function ActivitiesPage() {
   const handleBack = () => {
     setSelectedMonth(null);
     setLinks([]);
+    setErrors({});
   };
 
   const handleUpdateUrl = (day: number, url: string) => {
     setLinks(links.map(l => (l.day === day ? { ...l, url, saved: false } : l)));
+    if (errors[day]) {
+         setErrors(prev => {
+             const newErrors = { ...prev };
+             delete newErrors[day];
+             return newErrors;
+         });
+    }
   };
 
   const handleSaveDay = async (day: number) => {
     if (!selectedMonth) return;
     setSavingDay(day);
+    setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[day];
+        return newErrors;
+    });
 
     const link = links.find(l => l.day === day);
     const url = link?.url?.trim() ?? '';
 
-    const { error } = await supabase
+    // Validate with Zod
+    const validation = activitySchema.safeParse({ drive_url: url });
+    if (!validation.success) {
+        console.log("Validation failed:", validation.error);
+        setErrors(prev => ({ ...prev, [day]: validation.error.issues[0].message }));
+        setSavingDay(null);
+        return;
+    }
+
+    const { data: savedData, error } = await supabase
       .from('activities')
       .upsert(
         {
@@ -99,9 +124,16 @@ export default function ActivitiesPage() {
           updated_at: new Date().toISOString(),
         },
         { onConflict: 'month_id,day_number' }
-      );
+      )
+      .select();
+
+    if (error) {
+        console.error("Error saving activity:", error);
+        setErrors(prev => ({ ...prev, [day]: "Error al guardar: " + error.message }));
+    }
 
     if (!error) {
+      console.log("Activity saved successfully:", savedData);
       setLinks(links.map(l => (l.day === day ? { ...l, saved: true } : l)));
     }
 
@@ -225,7 +257,11 @@ export default function ActivitiesPage() {
                     <motion.div
                       key={link.day}
                       variants={itemVariants}
-                      className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-4 sm:p-5 border border-gray-200 hover:border-pink-200 transition-colors"
+                      className={`rounded-2xl p-4 sm:p-5 border transition-colors ${
+                          errors[link.day] 
+                          ? 'bg-red-50 border-red-200' 
+                          : 'bg-gradient-to-br from-gray-50 to-white border-gray-200 hover:border-pink-200'
+                      }`}
                     >
                       {/* Card Header */}
                       <div className="flex items-center justify-between mb-3">
@@ -244,12 +280,21 @@ export default function ActivitiesPage() {
                       </div>
 
                       {/* URL Input */}
-                      <input
-                        value={link.url}
-                        onChange={(e) => handleUpdateUrl(link.day, e.target.value)}
-                        placeholder="Pegar enlace de Drive..."
-                        className="w-full px-3 py-2.5 mb-3 bg-white border border-gray-200 rounded-xl text-sm focus:border-pink-300 focus:ring-2 focus:ring-pink-100 outline-none transition-all placeholder:text-gray-400"
-                      />
+                      <div className="mb-3">
+                        <input
+                            value={link.url}
+                            onChange={(e) => handleUpdateUrl(link.day, e.target.value)}
+                            placeholder="Pegar enlace de Drive..."
+                            className={`w-full px-3 py-2.5 bg-white border rounded-xl text-sm focus:ring-2 outline-none transition-all placeholder:text-gray-400 ${
+                                errors[link.day]
+                                ? 'border-red-300 focus:border-red-400 focus:ring-red-100 text-red-900'
+                                : 'border-gray-200 focus:border-pink-300 focus:ring-pink-100'
+                            }`}
+                        />
+                        {errors[link.day] && (
+                            <p className="text-xs text-red-500 mt-1 font-semibold">{errors[link.day]}</p>
+                        )}
+                      </div>
 
                       {/* Actions */}
                       <div className="flex gap-2">
@@ -262,7 +307,7 @@ export default function ActivitiesPage() {
                             {savingDay === link.day ? '...' : <div className="flex items-center justify-center gap-1"><HiSave /> Guardar</div>}
                           </motion.button>
                           
-                          {link.url.trim() && (
+                          {link.url.trim() && !errors[link.day] && (
                               <a 
                                 href={link.url} 
                                 target="_blank" 

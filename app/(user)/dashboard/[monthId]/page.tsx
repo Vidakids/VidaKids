@@ -31,7 +31,7 @@ export default function UserDaysPage() {
   const router = useRouter();
   const monthId = Number(params.monthId);
   const { setIsFullScreen } = useUserView();
-  const { months, fetchMonths, fetchDevotionals } = useUserStore();
+  const { months, fetchMonths, fetchDevotionals, fetchProgress, completedDays } = useUserStore();
 
   const month = months.find((m) => m.id === monthId);
 
@@ -39,7 +39,8 @@ export default function UserDaysPage() {
     setIsFullScreen(true);
     if (months.length === 0) fetchMonths();
     fetchDevotionals(monthId);
-  }, [monthId, setIsFullScreen, fetchMonths, fetchDevotionals, months.length]);
+    fetchProgress(monthId);
+  }, [monthId, setIsFullScreen, fetchMonths, fetchDevotionals, fetchProgress, months.length]);
 
   if (!month) {
     return (
@@ -107,7 +108,7 @@ export default function UserDaysPage() {
            // Placeholder logic for specific styling as per image
            // e.g., Day 1 is 'completed' (Green), other days are default (Blue)
            // In real app, check `readDays.includes(day)`
-           const isCompleted = false; // logic to be implemented later 
+           const isCompleted = completedDays.has(`${monthId}-${day}`); 
            
            return (
              <motion.div

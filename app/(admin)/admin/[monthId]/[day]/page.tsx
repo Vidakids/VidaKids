@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { HiChevronRight, HiCheck } from 'react-icons/hi';
+import { HiChevronRight, HiCheck, HiX } from 'react-icons/hi';
 import { HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 import { FiSave } from 'react-icons/fi';
 import { useAdminView } from '@/lib/admin-view-context';
@@ -42,6 +42,7 @@ export default function AdminDayEditorPage() {
   const {
     months, isSaving, saved, setSaved,
     fetchMonths, fetchDevotionals, getDevotional, saveDevotional,
+    validationError, clearValidationError
   } = useAdminStore();
 
   const [dayForm, setDayForm] = useState<DayForm>(emptyForm);
@@ -73,6 +74,8 @@ export default function AdminDayEditorPage() {
     fetchDevotionals(monthId).then(() => {
       loadFormFromStore();
     });
+    
+    return () => clearValidationError();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monthId, day]);
 
@@ -139,6 +142,21 @@ export default function AdminDayEditorPage() {
         </h2>
         <p className="text-sm text-gray-400 mt-1">Editando el devocional de este día</p>
       </motion.div>
+
+      {validationError && (
+        <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center max-w-2xl mx-auto"
+        >
+            <div className="flex items-center gap-2 text-sm">
+                <span className="font-bold">⚠️ Error:</span> {validationError}
+            </div>
+            <button onClick={clearValidationError} className="p-1 hover:bg-red-100 rounded text-red-400 hover:text-red-700">
+                <HiX size={16} />
+            </button>
+        </motion.div>
+      )}
 
       {/* Editor Form */}
       <motion.div

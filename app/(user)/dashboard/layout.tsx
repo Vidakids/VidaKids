@@ -341,15 +341,19 @@ function BackgroundMusic() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <motion.div 
+      drag
+      dragMomentum={false}
+      dragConstraints={{ left: -300, right: 0, top: -600, bottom: 0 }}
+      className="fixed bottom-6 right-6 z-50 cursor-grab active:cursor-grabbing"
+    >
       <audio ref={audioRef} loop>
         <source src="/music/music.mp3" type="audio/mpeg" />
       </audio>
 
       <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
         onClick={toggleMusic}
+        whileTap={{ scale: 0.95 }}
         className="bg-white rounded-full px-5 py-3 shadow-lg flex items-center gap-3 border border-pink-100 hover:shadow-xl transition-all"
       >
         {isPlaying ? (
@@ -366,7 +370,7 @@ function BackgroundMusic() {
           Música
         </span>
       </motion.button>
-    </div>
+    </motion.div>
   );
 }
 

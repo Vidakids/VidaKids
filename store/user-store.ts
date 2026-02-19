@@ -77,7 +77,7 @@ export const useUserStore = create<UserStore>((set, get) => {
         .select('day_number')
         .eq('user_id', user.id)
         .eq('month_id', monthId)
-        .eq('completed', true);
+        .eq('is_completed', true);
 
       if (data) {
         set((state) => {
