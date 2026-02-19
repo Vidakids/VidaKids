@@ -44,11 +44,18 @@ export async function login(
   }
 
   // 2. Consultar el rol del usuario en la tabla profiles
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('role')
+    .select('*') // Select all to see everything
     .eq('id', data.user.id)
     .single();
+
+  if (profileError) {
+    console.error('Profile fetch error:', profileError);
+  } else {
+    console.log('Profile found:', profile);
+    console.log('User ID from Auth:', data.user.id);
+  }
 
 
   const role = profile?.role ?? 'user';
